@@ -5,8 +5,7 @@ function Dashboard() {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <div>
-          <p className="dashboard-subtitle">Overview</p>
+        <div className="dashboard-title">
           <h1>Dashboard</h1>
           <p className="dashboard-description">
             Welcome back! Here's what's happening with your attendance system.
@@ -15,7 +14,13 @@ function Dashboard() {
 
         <div className="dashboard-date">
           <span>Today</span>
-          <strong>August 22, 2026</strong>
+          <strong>
+            {new Date().toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </strong>
         </div>
       </div>
 
@@ -26,8 +31,8 @@ function Dashboard() {
             <p>Total Students</p>
             <h2>120</h2>
             <Link to="/students" className="dashboard-nav-button">
-  View Students
-</Link>
+              View Students
+            </Link>
           </div>
         </div>
 

@@ -40,7 +40,7 @@
 .dashboard-date {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   gap: 5px;
   padding: 12px 18px;
   background: #ffffff;
@@ -389,6 +389,9 @@
   color: #94a3b8;
 }
 
+.dashboard-title{
+  flex: auto;
+}
 
 .dashboard-nav-button {
   display: inline-flex;

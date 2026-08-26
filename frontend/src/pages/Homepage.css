@@ -1,0 +1,140 @@
+/* Main Homepage */
+.homepage {
+    min-height: 100vh;
+    background: #f8fafc;
+    color: #0f172a;
+    font-family: Arial, sans-serif;
+}
+
+/* Navigation */
+.homepage-nav {
+    height: 7rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+    background: #CC3A63;
+    border-bottom: 5px solid #A2AB73;
+}
+
+.nav-left,
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Navigation Buttons */
+.dashboard-btn,
+.login-btn,
+.signup-btn {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.dashboard-btn {
+    background: #0f172a;
+    color: white;
+}
+
+.dashboard-btn:hover {
+    background: #1e293b;
+}
+
+.login-btn {
+    background: transparent;
+    color: #334155;
+    font-size: larger;
+    font-family: sans-serif;
+}
+
+.login-btn:hover {
+    background: #F9F0E0;
+    color: #CC3A63;
+}
+
+.signup-btn {
+    background: transparent;
+    color: #334155;
+    font-size: larger;
+    font-family: sans-serif;
+}
+
+.signup-btn:hover {
+    background: #A2AB73;
+    color: #F9F0E0;
+}
+
+/* Main Content */
+.homepage-content {
+    min-height: calc(100vh - 71px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.homepage-content h1 {
+    max-width: 1000px;
+    margin: 0 0 20px;
+    font-size: 48px;
+    line-height: 1.15;
+    font-weight: 900;
+    color: #A2AB73;
+}
+
+.homepage-content p {
+    max-width: 600px;
+    margin: 0 0 35px;
+    color: #64748b;
+    font-size: 18px;
+    line-height: 1.6;
+    background-color: #F9F0
+}
+
+/* Main Dashboard Button */
+.main-dashboard-btn {
+    border: none;
+    background: #2563eb;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 9px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.main-dashboard-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .homepage-nav {
+        padding: 0 20px;
+    }
+
+    .homepage-content h1 {
+        font-size: 36px;
+    }
+
+    .homepage-content p {
+        font-size: 16px;
+    }
+
+    .dashboard-btn,
+    .login-btn,
+    .signup-btn {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+}
