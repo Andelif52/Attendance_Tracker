@@ -427,6 +427,20 @@
   }
 }
 
+.session-form {
+  display: grid;
+  grid-template-columns: 1.4fr 0.7fr 0.7fr 0.7fr auto;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.session-form input {
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
 @media (max-width: 700px) {
   .dashboard {
     padding: 20px;

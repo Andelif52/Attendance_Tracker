@@ -1,7 +1,7 @@
 /* Main Homepage */
 .homepage {
     min-height: 100vh;
-    background: #f8fafc;
+    background: #FFF7EB;
     color: #0f172a;
     font-family: Arial, sans-serif;
 }
@@ -72,7 +72,7 @@
 
 /* Main Content */
 .homepage-content {
-    min-height: calc(100vh - 71px);
+    min-height: calc(100vh - 7rem);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -96,29 +96,332 @@
     color: #64748b;
     font-size: 18px;
     line-height: 1.6;
-    background-color: #F9F0
 }
 
-/* Main Dashboard Button */
-.main-dashboard-btn {
+
+/* =====================================================
+   AUTHENTICATION MODAL
+   ===================================================== */
+
+/* Dark background behind popup */
+.auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: rgba(15, 23, 42, 0.55);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 1000;
+
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+
+/* Popup */
+.auth-modal {
+    position: relative;
+
+    width: 100%;
+    max-width: 430px;
+
+    background: #FFF7EB;
+
+    border: 2px solid #A2AB73;
+    border-radius: 18px;
+
+    padding: 35px;
+
+    box-sizing: border-box;
+
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+
+    animation: authModalAppear 0.2s ease-out;
+}
+
+
+/* Slightly wider signup popup */
+.signup-modal {
+    max-width: 500px;
+}
+
+
+/* Popup animation */
+@keyframes authModalAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* Close button */
+.modal-close {
+    position: absolute;
+
+    top: 12px;
+    right: 16px;
+
     border: none;
-    background: #2563eb;
-    color: white;
-    padding: 14px 28px;
-    border-radius: 9px;
-    font-size: 16px;
-    font-weight: 600;
+    background: transparent;
+
+    color: #64748b;
+
+    font-size: 30px;
+    line-height: 1;
+
     cursor: pointer;
+
     transition: 0.2s ease;
 }
 
-.main-dashboard-btn:hover {
-    background: #1d4ed8;
-    transform: translateY(-1px);
+.modal-close:hover {
+    color: #CC3A63;
+    transform: scale(1.1);
 }
+
+
+/* Popup heading */
+.auth-modal h2 {
+    margin: 0 0 8px;
+
+    text-align: center;
+
+    color: #CC3A63;
+
+    font-size: 30px;
+    font-weight: 800;
+}
+
+
+/* Subtitle */
+.auth-subtitle {
+    margin: 0 0 28px !important;
+
+    text-align: center;
+
+    color: #64748b !important;
+
+    font-size: 15px !important;
+}
+
+
+/* Form group */
+.form-group {
+    margin-bottom: 18px;
+}
+
+
+/* Labels */
+.form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #334155;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* Inputs and select */
+.form-group input,
+.form-group select {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    box-sizing: border-box;
+
+    border: 1.5px solid #d5d9c2;
+    border-radius: 9px;
+
+    background: #F9F0E0;
+
+    color: #0f172a;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition: 0.2s ease;
+}
+
+
+.form-group input::placeholder {
+    color: #94a3b8;
+}
+
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #CC3A63;
+
+    box-shadow: 0 0 0 3px rgba(204, 58, 99, 0.12);
+}
+
+
+/* Password input container */
+.password-wrapper {
+    position: relative;
+}
+
+
+/* Password input */
+.password-wrapper input {
+    padding-right: 48px;
+}
+
+
+/* Eye button */
+.password-toggle {
+    position: absolute;
+
+    right: 8px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 34px;
+    height: 34px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: #64748b;
+
+    font-size: 19px;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.2s ease;
+}
+
+
+.password-toggle:hover {
+    background: #F9F0E0;
+    color: #CC3A63;
+}
+
+
+/* Two-column row for department and gender */
+.form-row {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 14px;
+}
+
+
+/* Login / Signup submit button */
+.auth-submit-btn {
+    width: 100%;
+
+    border: none;
+
+    padding: 13px 20px;
+
+    margin-top: 5px;
+
+    border-radius: 9px;
+
+    background: #CC3A63;
+    color: white;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.auth-submit-btn:hover {
+    background: #a92f51;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 5px 15px rgba(204, 58, 99, 0.25);
+}
+
+
+/* Error / success messages */
+.auth-message {
+    margin: 5px 0 15px !important;
+
+    text-align: center;
+
+    font-size: 14px !important;
+    font-weight: 600;
+}
+
+
+.auth-message.error {
+    color: #CC3A63 !important;
+}
+
+
+.auth-message.success {
+    color: #667238 !important;
+}
+
+
+/* Switch between Login and Signup */
+.switch-auth {
+    margin: 22px 0 0 !important;
+
+    text-align: center;
+
+    color: #64748b !important;
+
+    font-size: 14px !important;
+}
+
+
+.switch-auth button {
+    border: none;
+
+    padding: 0;
+
+    background: transparent;
+
+    color: #CC3A63;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.switch-auth button:hover {
+    text-decoration: underline;
+}
+
 
 /* Responsive */
 @media (max-width: 600px) {
+
     .homepage-nav {
         padding: 0 20px;
     }
@@ -136,5 +439,18 @@
     .signup-btn {
         padding: 8px 12px;
         font-size: 14px;
+    }
+
+    .auth-modal {
+        padding: 30px 22px;
+    }
+
+    .auth-modal h2 {
+        font-size: 26px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
     }
 }
