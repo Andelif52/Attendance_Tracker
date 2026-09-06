@@ -1,8 +1,16 @@
+/* =====================================================
+   PALETTE 4
+   #000000 - Black
+   #CB2957 - Pink/Crimson
+   #DDDDDD - Light Gray
+   #EEEEEE - Very Light Gray
+   ===================================================== */
+
 /* Main Homepage */
 .homepage {
     min-height: 100vh;
-    background: #FFF7EB;
-    color: #0f172a;
+    background: #EEEEEE;
+    color: #000000;
     font-family: Arial, sans-serif;
 }
 
@@ -13,8 +21,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 50px;
-    background: #CC3A63;
-    border-bottom: 5px solid #A2AB73;
+    background: #000000;
+    border-bottom: 5px solid #CB2957;
 }
 
 .nav-left,
@@ -38,36 +46,36 @@
 }
 
 .dashboard-btn {
-    background: #0f172a;
-    color: white;
+    background: #CB2957;
+    color: #EEEEEE;
 }
 
 .dashboard-btn:hover {
-    background: #1e293b;
+    background: #CB2957;
 }
 
 .login-btn {
     background: transparent;
-    color: #334155;
+    color: #EEEEEE;
     font-size: larger;
     font-family: sans-serif;
 }
 
 .login-btn:hover {
-    background: #F9F0E0;
-    color: #CC3A63;
+    background: #EEEEEE;
+    color: #CB2957;
 }
 
 .signup-btn {
     background: transparent;
-    color: #334155;
+    color: #EEEEEE;
     font-size: larger;
     font-family: sans-serif;
 }
 
 .signup-btn:hover {
-    background: #A2AB73;
-    color: #F9F0E0;
+    background: #CB2957;
+    color: #EEEEEE;
 }
 
 /* Main Content */
@@ -87,13 +95,13 @@
     font-size: 48px;
     line-height: 1.15;
     font-weight: 900;
-    color: #A2AB73;
+    color: #000000;
 }
 
 .homepage-content p {
     max-width: 600px;
     margin: 0 0 35px;
-    color: #64748b;
+    color: #000000;
     font-size: 18px;
     line-height: 1.6;
 }
@@ -103,7 +111,6 @@
    AUTHENTICATION MODAL
    ===================================================== */
 
-/* Dark background behind popup */
 .auth-overlay {
     position: fixed;
     top: 0;
@@ -111,7 +118,7 @@
     width: 100%;
     height: 100%;
 
-    background: rgba(15, 23, 42, 0.55);
+    background: rgba(0, 0, 0, 0.65);
 
     display: flex;
     justify-content: center;
@@ -123,17 +130,15 @@
     box-sizing: border-box;
 }
 
-
-/* Popup */
 .auth-modal {
     position: relative;
 
     width: 100%;
     max-width: 430px;
 
-    background: #FFF7EB;
+    background: #EEEEEE;
 
-    border: 2px solid #A2AB73;
+    border: 2px solid #CB2957;
     border-radius: 18px;
 
     padding: 35px;
@@ -145,14 +150,10 @@
     animation: authModalAppear 0.2s ease-out;
 }
 
-
-/* Slightly wider signup popup */
 .signup-modal {
     max-width: 500px;
 }
 
-
-/* Popup animation */
 @keyframes authModalAppear {
     from {
         opacity: 0;
@@ -165,8 +166,6 @@
     }
 }
 
-
-/* Close button */
 .modal-close {
     position: absolute;
 
@@ -176,7 +175,7 @@
     border: none;
     background: transparent;
 
-    color: #64748b;
+    color: #000000;
 
     font-size: 30px;
     line-height: 1;
@@ -187,56 +186,46 @@
 }
 
 .modal-close:hover {
-    color: #CC3A63;
+    color: #CB2957;
     transform: scale(1.1);
 }
 
-
-/* Popup heading */
 .auth-modal h2 {
     margin: 0 0 8px;
 
     text-align: center;
 
-    color: #CC3A63;
+    color: #CB2957;
 
     font-size: 30px;
     font-weight: 800;
 }
 
-
-/* Subtitle */
 .auth-subtitle {
     margin: 0 0 28px !important;
 
     text-align: center;
 
-    color: #64748b !important;
+    color: #000000 !important;
 
     font-size: 15px !important;
 }
 
-
-/* Form group */
 .form-group {
     margin-bottom: 18px;
 }
 
-
-/* Labels */
 .form-group label {
     display: block;
 
     margin-bottom: 7px;
 
-    color: #334155;
+    color: #000000;
 
     font-size: 14px;
     font-weight: 600;
 }
 
-
-/* Inputs and select */
 .form-group input,
 .form-group select {
     width: 100%;
@@ -245,12 +234,12 @@
 
     box-sizing: border-box;
 
-    border: 1.5px solid #d5d9c2;
+    border: 1.5px solid #DDDDDD;
     border-radius: 9px;
 
-    background: #F9F0E0;
+    background: #DDDDDD;
 
-    color: #0f172a;
+    color: #000000;
 
     font-size: 15px;
 
@@ -259,33 +248,25 @@
     transition: 0.2s ease;
 }
 
-
 .form-group input::placeholder {
-    color: #94a3b8;
+    color: #000000;
 }
-
 
 .form-group input:focus,
 .form-group select:focus {
-    border-color: #CC3A63;
+    border-color: #CB2957;
 
-    box-shadow: 0 0 0 3px rgba(204, 58, 99, 0.12);
+    box-shadow: 0 0 0 3px rgba(203, 41, 87, 0.12);
 }
 
-
-/* Password input container */
 .password-wrapper {
     position: relative;
 }
 
-
-/* Password input */
 .password-wrapper input {
     padding-right: 48px;
 }
 
-
-/* Eye button */
 .password-toggle {
     position: absolute;
 
@@ -302,7 +283,7 @@
 
     background: transparent;
 
-    color: #64748b;
+    color: #000000;
 
     font-size: 19px;
 
@@ -315,14 +296,11 @@
     transition: 0.2s ease;
 }
 
-
 .password-toggle:hover {
-    background: #F9F0E0;
-    color: #CC3A63;
+    background: #DDDDDD;
+    color: #CB2957;
 }
 
-
-/* Two-column row for department and gender */
 .form-row {
     display: grid;
 
@@ -331,8 +309,6 @@
     gap: 14px;
 }
 
-
-/* Login / Signup submit button */
 .auth-submit-btn {
     width: 100%;
 
@@ -344,8 +320,8 @@
 
     border-radius: 9px;
 
-    background: #CC3A63;
-    color: white;
+    background: #CB2957;
+    color: #EEEEEE;
 
     font-size: 16px;
     font-weight: 700;
@@ -355,17 +331,14 @@
     transition: 0.2s ease;
 }
 
-
 .auth-submit-btn:hover {
-    background: #a92f51;
+    background: #000000;
 
     transform: translateY(-1px);
 
-    box-shadow: 0 5px 15px rgba(204, 58, 99, 0.25);
+    box-shadow: 0 5px 15px rgba(203, 41, 87, 0.25);
 }
 
-
-/* Error / success messages */
 .auth-message {
     margin: 5px 0 15px !important;
 
@@ -375,28 +348,23 @@
     font-weight: 600;
 }
 
-
 .auth-message.error {
-    color: #CC3A63 !important;
+    color: #CB2957 !important;
 }
-
 
 .auth-message.success {
-    color: #667238 !important;
+    color: #000000 !important;
 }
 
-
-/* Switch between Login and Signup */
 .switch-auth {
     margin: 22px 0 0 !important;
 
     text-align: center;
 
-    color: #64748b !important;
+    color: #000000 !important;
 
     font-size: 14px !important;
 }
-
 
 .switch-auth button {
     border: none;
@@ -405,7 +373,7 @@
 
     background: transparent;
 
-    color: #CC3A63;
+    color: #CB2957;
 
     font-size: 14px;
     font-weight: 700;
@@ -413,11 +381,9 @@
     cursor: pointer;
 }
 
-
 .switch-auth button:hover {
     text-decoration: underline;
 }
-
 
 /* Responsive */
 @media (max-width: 600px) {
@@ -454,3 +420,4 @@
         gap: 0;
     }
 }
+

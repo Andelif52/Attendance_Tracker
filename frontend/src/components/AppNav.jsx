@@ -13,7 +13,7 @@ function AppNav() {
 
   return (
     <header className="app-nav">
-      <div className="app-nav-brand">IoT Attendance</div>
+      <div className="app-nav-brand">Attendance Tracker</div>
 
       <nav className="app-nav-links">
         <NavLink to="/dashboard">Dashboard</NavLink>

@@ -6,8 +6,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      // Proxy all /api requests to the FastAPI backend
       "/api": {
-        target: "http://localhost:5000",
+        target: import.meta?.env?.VITE_API_URL || "http://localhost:8000",
         changeOrigin: true,
       },
     },

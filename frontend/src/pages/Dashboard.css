@@ -1,7 +1,7 @@
 .dashboard {
   min-height: 100vh;
   padding: 32px;
-  background: #f5f7fb;
+  background: #EEEEEE;
   color: #1e293b;
   box-sizing: border-box;
 }
@@ -73,7 +73,7 @@
   gap: 16px;
   padding: 22px;
   background: #ffffff;
-  border: 1px solid #e8ebf0;
+  border: 2px solid #DDDDDD;
   border-radius: 14px;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -96,9 +96,16 @@
   flex-shrink: 0;
 }
 
+.stat-info {
+  font-size: larger;
+  font-family: sans-serif;
+
+}
+
+
 .students-icon {
-  background: #eef2ff;
-  color: #6366f1;
+  background: #EEEEEE;
+  color: #6bb441;
 }
 
 .present-icon {
@@ -183,16 +190,18 @@
   padding: 9px 14px;
   border: 0;
   border-radius: 8px;
-  background: #eef2ff;
-  color: #4f46e5;
+  background: #CB2957;
+  color: #EEEEEE;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease;
+  text-decoration: auto;
 }
 
 .view-button:hover {
-  background: #e0e7ff;
+  background: #ac1c45;
+  transform: translateY(-1px);
 }
 
 .more-button {
@@ -219,10 +228,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: conic-gradient(
-    #6366f1 0% 80%,
-    #e5e7eb 80% 100%
-  );
+  background: conic-gradient(#6366f1 0% 80%,
+      #e5e7eb 80% 100%);
   flex-shrink: 0;
 }
 
@@ -389,7 +396,7 @@
   color: #94a3b8;
 }
 
-.dashboard-title{
+.dashboard-title {
   flex: auto;
 }
 
@@ -399,7 +406,7 @@
   justify-content: center;
   padding: 10px 16px;
   border-radius: 8px;
-  background: #6366f1;
+  background: #CB2957;
   color: #ffffff;
   text-decoration: none;
   font-size: 13px;
@@ -408,7 +415,7 @@
 }
 
 .dashboard-nav-button:hover {
-  background: #4f46e5;
+  background: #ac1c45;
   transform: translateY(-1px);
 }
 

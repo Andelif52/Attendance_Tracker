@@ -4,43 +4,56 @@
   justify-content: space-between;
   gap: 16px;
   padding: 14px 32px;
-  background: #111827;
-  color: #f8fafc;
+  background: #000000;
+  color: #CB2957;
+  border-bottom: 0.3rem solid #CB2957;
+  height: 7rem;
 }
 
 .app-nav-brand {
-  font-weight: 700;
+  font-weight: 1000;
   letter-spacing: 0.3px;
+  font-size: x-large;
+  font-family: serif;
 }
 
 .app-nav-links {
   display: flex;
-  gap: 18px;
+  gap: 100px;
+  width: 1000px;
+  justify-content: center;
 }
 
 .app-nav-links a {
-  color: #cbd5e1;
+  color: #DDDDDD;
   text-decoration: none;
-  font-size: 14px;
+  font-size: large;
 }
 
 .app-nav-links a.active,
 .app-nav-links a:hover {
-  color: #ffffff;
+  color: #cb2957c9;
 }
 
 .app-nav-user {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 13px;
+  font-size:  medium;;
 }
 
 .app-nav-user button {
   border: none;
-  background: #334155;
+  background: #CB2957;
   color: white;
   padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.app-nav-user button:hover{
+  transform: translateY(-1px);
+  background: #ac1c45;
+
 }

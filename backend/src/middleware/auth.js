@@ -11,10 +11,14 @@ export const authenticate = asyncHandler(async (req, res, next) => {
   }
 
   let payload;
+
   try {
     payload = verifyToken(token);
   } catch {
-    throw new AppError("Invalid or expired session. Please log in again.", 401);
+    throw new AppError(
+      "Invalid or expired session. Please log in again.",
+      401
+    );
   }
 
   const user = await prisma.user.findUnique({
@@ -26,18 +30,27 @@ export const authenticate = asyncHandler(async (req, res, next) => {
   }
 
   req.user = user;
+
   next();
 });
 
 export function authorize(...roles) {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {
-      next(new AppError("You do not have permission to perform this action.", 403));
+      next(
+        new AppError(
+          "You do not have permission to perform this action.",
+          403
+        )
+      );
       return;
     }
+
     next();
   };
 }
+
+export const requireAdmin = authorize("ADMIN");
 
 export const optionalDeviceOrAuth = asyncHandler(async (req, res, next) => {
   const deviceKey = req.header("x-device-key");
@@ -46,6 +59,7 @@ export const optionalDeviceOrAuth = asyncHandler(async (req, res, next) => {
     if (deviceKey !== env.deviceApiKey) {
       throw new AppError("Invalid device key.", 401);
     }
+
     req.isDevice = true;
     next();
     return;

@@ -1,30 +1,50 @@
+/**
+ * AuthContext — global authentication state for FastAPI JWT-based auth.
+ *
+ * The FastAPI backend returns a Bearer JWT token on login.
+ * Token is stored in localStorage and sent as Authorization: Bearer <token>
+ * on every subsequent request via the api/client.js wrapper.
+ *
+ * User state shape mirrors FastAPI TeacherResponse:
+ *   { teacher_id, name, email, role, created_at }
+ */
+
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { apiRequest } from "../api/client";
+import { login as apiLogin, getMe, registerTeacher } from "../api/auth";
+import { setToken, clearToken, setUserInfo, getUserInfo, getToken } from "../api/client";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(getUserInfo); // Initialize from localStorage
   const [loading, setLoading] = useState(true);
 
+  // On mount, validate stored token by calling /me
   useEffect(() => {
     let cancelled = false;
 
-    apiRequest("/api/auth/me")
-      .then((payload) => {
+    const token = getToken();
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    getMe()
+      .then((profile) => {
         if (!cancelled) {
-          setUser(payload.data.user);
+          setUser(profile);
+          setUserInfo(profile);
         }
       })
       .catch(() => {
         if (!cancelled) {
+          // Token invalid or expired — clear everything
+          clearToken();
           setUser(null);
         }
       })
       .finally(() => {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       });
 
     return () => {
@@ -37,29 +57,54 @@ export function AuthProvider({ children }) {
       user,
       loading,
       setUser,
+
+      /**
+       * Login with email + password.
+       * Stores token and fetches full user profile.
+       */
       async login(email, password) {
-        const payload = await apiRequest("/api/auth/login", {
-          method: "POST",
-          body: { email, password },
-        });
-        setUser(payload.data.user);
-        return payload.data.user;
+        // POST /api/v1/auth/login → { access_token, token_type, role, name }
+        const tokenData = await apiLogin(email, password);
+
+        // Store the access token
+        setToken(tokenData.access_token);
+
+        // Fetch the full user profile
+        const profile = await getMe();
+        setUser(profile);
+        setUserInfo(profile);
+        return profile;
       },
+
+      /**
+       * Register a new account and immediately log in.
+       */
       async register(data) {
-        const payload = await apiRequest("/api/auth/register", {
-          method: "POST",
-          body: data,
+        await registerTeacher({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          role: data.role || "teacher",
         });
-        setUser(payload.data.user);
-        return payload.data.user;
+        const tokenData = await apiLogin(data.email, data.password);
+        setToken(tokenData.access_token);
+        const profile = await getMe();
+        setUser(profile);
+        setUserInfo(profile);
+        return profile;
       },
-      async logout() {
-        await apiRequest("/api/auth/logout", { method: "POST" });
+
+      /**
+       * Logout — clear the stored token and user info.
+       */
+      logout() {
+        clearToken();
         setUser(null);
       },
     }),
     [user, loading]
   );
+
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

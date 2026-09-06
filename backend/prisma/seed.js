@@ -7,33 +7,55 @@ dotenv.config();
 const prisma = new PrismaClient();
 
 async function main() {
-  const adminEmail = process.env.ADMIN_EMAIL || "admin@iot-attendance.local";
-  const adminPassword = process.env.ADMIN_PASSWORD || "Admin@12345";
-  const adminName = process.env.ADMIN_NAME || "System Admin";
+  const adminEmail =
+    process.env.ADMIN_EMAIL || "admin@iot-attendance.local";
 
-  const passwordHash = await bcrypt.hash(adminPassword, 12);
+  const adminPassword =
+    process.env.ADMIN_PASSWORD || "Admin@12345";
+
+  const adminName =
+    process.env.ADMIN_NAME || "System Admin";
+
+  const adminPasswordHash = await bcrypt.hash(
+    adminPassword,
+    12
+  );
 
   await prisma.user.upsert({
-    where: { email: adminEmail },
+    where: {
+      email: adminEmail,
+    },
+
     update: {
       name: adminName,
+      passwordHash: adminPasswordHash,
       role: Role.ADMIN,
+      department: "Administration",
+      gender: "Other",
     },
+
     create: {
       name: adminName,
       email: adminEmail,
-      passwordHash,
+      passwordHash: adminPasswordHash,
       role: Role.ADMIN,
       department: "Administration",
       gender: "Other",
     },
   });
 
-  const teacherPassword = await bcrypt.hash("Teacher@123", 12);
+  const teacherPassword = await bcrypt.hash(
+    "Teacher@123",
+    12
+  );
 
   await prisma.user.upsert({
-    where: { email: "mustafa@iot-attendance.local" },
+    where: {
+      email: "mustafa@iot-attendance.local",
+    },
+
     update: {},
+
     create: {
       name: "Mustafa",
       email: "mustafa@iot-attendance.local",
@@ -45,8 +67,12 @@ async function main() {
   });
 
   await prisma.user.upsert({
-    where: { email: "labiba@iot-attendance.local" },
+    where: {
+      email: "labiba@iot-attendance.local",
+    },
+
     update: {},
+
     create: {
       name: "Labiba",
       email: "labiba@iot-attendance.local",
@@ -58,27 +84,91 @@ async function main() {
   });
 
   const students = [
-    { name: "Andelif", varsityId: "202201", department: "CSE", year: 4, semester: 2, section: "A" },
-    { name: "Arnob", varsityId: "202241", department: "CSE", year: 4, semester: 2, section: "A" },
-    { name: "Fahim", varsityId: "202214", department: "CSE", year: 4, semester: 2, section: "A" },
-    { name: "Nusrat Sultana", varsityId: "202202", department: "CSE", year: 4, semester: 2, section: "A" },
-    { name: "Rakib Hasan", varsityId: "202203", department: "CSE", year: 4, semester: 2, section: "B" },
-    { name: "Fatima Akter", varsityId: "202204", department: "CSE", year: 4, semester: 2, section: "B" },
-    { name: "Mahin Khan", varsityId: "202205", department: "CSE", year: 2, semester: 1, section: "B" },
-    { name: "Sumaiya Ahmed", varsityId: "202206", department: "EEE", year: 2, semester: 2, section: "A" },
+    {
+      name: "Andelif",
+      varsityId: "202201",
+      department: "CSE",
+      year: 4,
+      semester: 2,
+      section: "A",
+    },
+    {
+      name: "Arnob",
+      varsityId: "202241",
+      department: "CSE",
+      year: 4,
+      semester: 2,
+      section: "A",
+    },
+    {
+      name: "Fahim",
+      varsityId: "202214",
+      department: "CSE",
+      year: 4,
+      semester: 2,
+      section: "A",
+    },
+    {
+      name: "Nusrat Sultana",
+      varsityId: "202202",
+      department: "CSE",
+      year: 4,
+      semester: 2,
+      section: "A",
+    },
+    {
+      name: "Rakib Hasan",
+      varsityId: "202203",
+      department: "CSE",
+      year: 4,
+      semester: 2,
+      section: "B",
+    },
+    {
+      name: "Fatima Akter",
+      varsityId: "202204",
+      department: "CSE",
+      year: 4,
+      semester: 2,
+      section: "B",
+    },
+    {
+      name: "Mahin Khan",
+      varsityId: "202205",
+      department: "CSE",
+      year: 2,
+      semester: 1,
+      section: "B",
+    },
+    {
+      name: "Sumaiya Ahmed",
+      varsityId: "202206",
+      department: "EEE",
+      year: 2,
+      semester: 2,
+      section: "A",
+    },
   ];
 
   for (const student of students) {
     await prisma.student.upsert({
-      where: { varsityId: student.varsityId },
+      where: {
+        varsityId: student.varsityId,
+      },
+
       update: student,
+
       create: student,
     });
   }
 
   console.log("Seed complete.");
-  console.log(`Admin login: ${adminEmail} / ${adminPassword}`);
-  console.log("Teacher login: mustafa@iot-attendance.local / Teacher@123");
+  console.log(
+    `Admin login: ${adminEmail} / ${adminPassword}`
+  );
+  console.log(
+    "Teacher login: mustafa@iot-attendance.local / Teacher@123"
+  );
 }
 
 main()
