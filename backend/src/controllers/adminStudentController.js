@@ -1,4 +1,4 @@
-import { prisma } from "../config/db.js";
+import { db } from "../config/db.js";
 
 import {
   AppError,
@@ -6,39 +6,63 @@ import {
   serializeStudent,
 } from "../utils/helpers.js";
 
+const STUDENTS_COLLECTION = "students";
+
+function normalizeStudent(id, data) {
+  return {
+    id,
+    ...data,
+  };
+}
+
 export const listAdminStudents = asyncHandler(async (req, res) => {
-  const { year, semester, section, department, search } = req.query;
+  const {
+    department,
+    search,
+  } = req.query;
 
-  const students = await prisma.student.findMany({
-    where: {
-      ...(year ? { year: Number(year) } : {}),
-      ...(semester ? { semester: Number(semester) } : {}),
-      ...(section ? { section } : {}),
-      ...(department ? { department } : {}),
-      ...(search
-        ? {
-            OR: [
-              {
-                name: {
-                  contains: search,
-                },
-              },
-              {
-                varsityId: {
-                  contains: search,
-                },
-              },
-            ],
-          }
-        : {}),
-    },
+  let query = db.collection(STUDENTS_COLLECTION);
 
-    orderBy: [
-      { year: "asc" },
-      { section: "asc" },
-      { name: "asc" },
-    ],
-  });
+  if (department) {
+    query = query.where(
+      "department",
+      "==",
+      department
+    );
+  }
+
+  const snapshot = await query.get();
+
+  let students = snapshot.docs.map((doc) =>
+    normalizeStudent(
+      doc.id,
+      doc.data()
+    )
+  );
+
+  if (search) {
+    const searchValue =
+      search.toLowerCase();
+
+    students = students.filter(
+      (student) =>
+        student.name
+          ?.toLowerCase()
+          .includes(searchValue) ||
+        student.student_id
+          ?.toLowerCase()
+          .includes(searchValue) ||
+        student.email
+          ?.toLowerCase()
+          .includes(searchValue)
+    );
+  }
+
+  students.sort((a, b) =>
+    (a.name || "").localeCompare(
+      b.name || ""
+    )
+  );
 
   res.json({
     success: true,
@@ -50,15 +74,22 @@ export const listAdminStudents = asyncHandler(async (req, res) => {
 });
 
 export const getAdminStudent = asyncHandler(async (req, res) => {
-  const student = await prisma.student.findUnique({
-    where: {
-      id: Number(req.params.id),
-    },
-  });
+  const studentDoc = await db
+    .collection(STUDENTS_COLLECTION)
+    .doc(req.params.id)
+    .get();
 
-  if (!student) {
-    throw new AppError("Student not found.", 404);
+  if (!studentDoc.exists) {
+    throw new AppError(
+      "Student not found.",
+      404
+    );
   }
+
+  const student = normalizeStudent(
+    studentDoc.id,
+    studentDoc.data()
+  );
 
   res.json({
     success: true,
@@ -69,106 +100,150 @@ export const getAdminStudent = asyncHandler(async (req, res) => {
 });
 
 export const createAdminStudent = asyncHandler(async (req, res) => {
-  try {
-    const student = await prisma.student.create({
-      data: {
-        name: req.body.name,
-        varsityId: req.body.varsityId,
-        department: req.body.department,
-        year: req.body.year,
-        semester: req.body.semester,
-        section: req.body.section.toUpperCase(),
-      },
-    });
+  const studentId = req.body.id;
 
-    res.status(201).json({
-      success: true,
-      message: "Student created successfully.",
-      data: {
-        student: serializeStudent(student),
-      },
-    });
-  } catch (error) {
-    if (error.code === "P2002") {
-      throw new AppError(
-        "A student with this Varsity ID already exists.",
-        409
-      );
-    }
+  const studentRef = db
+    .collection(STUDENTS_COLLECTION)
+    .doc(studentId);
 
-    throw error;
+  const existingStudent =
+    await studentRef.get();
+
+  if (existingStudent.exists) {
+    throw new AppError(
+      "A student with this ID already exists.",
+      409
+    );
   }
+
+  const studentData = {
+    student_id: studentId,
+    name: req.body.name,
+    department: req.body.department,
+    batch: req.body.batch ?? null,
+    email: req.body.email ?? null,
+    face_enrolled:
+      req.body.face_enrolled ?? false,
+    is_active:
+      req.body.is_active ?? true,
+    created_at: new Date(),
+  };
+
+  await studentRef.set(studentData);
+
+  const student = {
+    id: studentId,
+    ...studentData,
+  };
+
+  res.status(201).json({
+    success: true,
+    message: "Student created successfully.",
+    data: {
+      student: serializeStudent(student),
+    },
+  });
 });
 
 export const updateAdminStudent = asyncHandler(async (req, res) => {
-  const id = Number(req.params.id);
+  const studentRef = db
+    .collection(STUDENTS_COLLECTION)
+    .doc(req.params.id);
 
-  const existing = await prisma.student.findUnique({
-    where: { id },
+  const existingDoc =
+    await studentRef.get();
+
+  if (!existingDoc.exists) {
+    throw new AppError(
+      "Student not found.",
+      404
+    );
+  }
+
+  const updateData = {};
+
+  if (req.body.name !== undefined) {
+    updateData.name =
+      req.body.name;
+  }
+
+  if (req.body.department !== undefined) {
+    updateData.department =
+      req.body.department;
+  }
+
+  if (req.body.batch !== undefined) {
+    updateData.batch =
+      req.body.batch;
+  }
+
+  if (req.body.email !== undefined) {
+    updateData.email =
+      req.body.email;
+  }
+
+  if (req.body.face_enrolled !== undefined) {
+    updateData.face_enrolled =
+      req.body.face_enrolled;
+  }
+
+  if (req.body.is_active !== undefined) {
+    updateData.is_active =
+      req.body.is_active;
+  }
+
+  await studentRef.update(updateData);
+
+  const updatedDoc =
+    await studentRef.get();
+
+  const student = normalizeStudent(
+    updatedDoc.id,
+    updatedDoc.data()
+  );
+
+  res.json({
+    success: true,
+    message: "Student updated successfully.",
+    data: {
+      student: serializeStudent(student),
+    },
   });
-
-  if (!existing) {
-    throw new AppError("Student not found.", 404);
-  }
-
-  const data = {
-    ...req.body,
-  };
-
-  if (req.body.section) {
-    data.section = req.body.section.toUpperCase();
-  }
-
-  try {
-    const student = await prisma.student.update({
-      where: { id },
-      data,
-    });
-
-    res.json({
-      success: true,
-      message: "Student updated successfully.",
-      data: {
-        student: serializeStudent(student),
-      },
-    });
-  } catch (error) {
-    if (error.code === "P2002") {
-      throw new AppError(
-        "A student with this Varsity ID already exists.",
-        409
-      );
-    }
-
-    throw error;
-  }
 });
 
 export const deleteAdminStudent = asyncHandler(async (req, res) => {
-  const id = Number(req.params.id);
+  const studentRef = db
+    .collection(STUDENTS_COLLECTION)
+    .doc(req.params.id);
 
-  const existing = await prisma.student.findUnique({
-    where: { id },
-  });
+  const existingDoc =
+    await studentRef.get();
 
-  if (!existing) {
-    throw new AppError("Student not found.", 404);
+  if (!existingDoc.exists) {
+    throw new AppError(
+      "Student not found.",
+      404
+    );
   }
 
-  try {
-    await prisma.student.delete({
-      where: { id },
-    });
-  } catch (error) {
-    if (error.code === "P2003") {
-      throw new AppError(
-        "This student has attendance records and cannot be deleted.",
-        409
-      );
-    }
+  const recordsSnapshot = await db
+    .collection("attendance_records")
+    .where(
+      "studentId",
+      "==",
+      req.params.id
+    )
+    .limit(1)
+    .get();
 
-    throw error;
+  if (!recordsSnapshot.empty) {
+    throw new AppError(
+      "This student has attendance records and cannot be deleted.",
+      409
+    );
   }
+
+  await studentRef.delete();
 
   res.json({
     success: true,

@@ -9,10 +9,10 @@ const password = z
   .string()
   .min(6, "Password must be at least 6 characters.");
 
-const idParam = z.coerce
-  .number()
-  .int()
-  .positive();
+const idParam = z
+  .string()
+  .trim()
+  .min(1, "ID is required.");
 
 export const registerSchema = z.object({
   body: z.object({
@@ -24,17 +24,6 @@ export const registerSchema = z.object({
     email,
 
     password,
-
-    department: z
-      .string()
-      .trim()
-      .min(1, "Department is required."),
-
-    gender: z.enum([
-      "Male",
-      "Female",
-      "Other",
-    ]),
   }),
 });
 
@@ -54,38 +43,39 @@ export const loginSchema = z.object({
 
 export const studentCreateSchema = z.object({
   body: z.object({
+    id: z
+      .string()
+      .trim()
+      .min(1, "Student ID is required."),
+
     name: z
       .string()
       .trim()
       .min(2, "Name is required."),
-
-    varsityId: z
-      .string()
-      .trim()
-      .min(3, "Varsity ID is required."),
 
     department: z
       .string()
       .trim()
       .min(1, "Department is required."),
 
-    year: z.coerce
-      .number()
-      .int()
-      .min(1)
-      .max(8),
-
-    semester: z.coerce
-      .number()
-      .int()
-      .min(1)
-      .max(3),
-
-    section: z
+    batch: z
       .string()
       .trim()
-      .min(1)
-      .max(4),
+      .optional(),
+
+    email: z
+      .string()
+      .trim()
+      .email("Enter a valid email address.")
+      .optional(),
+
+    face_enrolled: z
+      .boolean()
+      .optional(),
+
+    is_active: z
+      .boolean()
+      .optional(),
   }),
 });
 
@@ -101,61 +91,35 @@ export const studentUpdateSchema = z.object({
       .min(2)
       .optional(),
 
-    varsityId: z
-      .string()
-      .trim()
-      .min(3)
-      .optional(),
-
     department: z
       .string()
       .trim()
       .min(1)
       .optional(),
 
-    year: z.coerce
-      .number()
-      .int()
-      .min(1)
-      .max(8)
-      .optional(),
-
-    semester: z.coerce
-      .number()
-      .int()
-      .min(1)
-      .max(3)
-      .optional(),
-
-    section: z
+    batch: z
       .string()
       .trim()
-      .min(1)
-      .max(4)
+      .optional(),
+
+    email: z
+      .string()
+      .trim()
+      .email("Enter a valid email address.")
+      .optional(),
+
+    face_enrolled: z
+      .boolean()
+      .optional(),
+
+    is_active: z
+      .boolean()
       .optional(),
   }),
 });
 
-const optionalNumber = z.preprocess(
-  (value) =>
-    value === undefined || value === ""
-      ? undefined
-      : Number(value),
-
-  z.number().int().optional()
-);
-
 export const studentListSchema = z.object({
   query: z.object({
-    year: optionalNumber,
-
-    semester: optionalNumber,
-
-    section: z
-      .string()
-      .trim()
-      .optional(),
-
     department: z
       .string()
       .trim()
@@ -188,17 +152,6 @@ export const teacherCreateSchema = z.object({
     email,
 
     password,
-
-    department: z
-      .string()
-      .trim()
-      .min(1, "Department is required."),
-
-    gender: z.enum([
-      "Male",
-      "Female",
-      "Other",
-    ]),
   }),
 });
 
@@ -218,20 +171,6 @@ export const teacherUpdateSchema = z.object({
       email: email.optional(),
 
       password: password.optional(),
-
-      department: z
-        .string()
-        .trim()
-        .min(1)
-        .optional(),
-
-      gender: z
-        .enum([
-          "Male",
-          "Female",
-          "Other",
-        ])
-        .optional(),
     })
     .refine(
       (data) => Object.keys(data).length > 0,
@@ -247,6 +186,141 @@ export const teacherIdSchema = z.object({
     id: idParam,
   }),
 });
+
+
+
+/* =========================
+   COURSE VALIDATION
+========================= */
+
+export const courseCreateSchema = z.object({
+  body: z.object({
+    course_code: z
+      .string()
+      .trim()
+      .min(1, "Course code is required."),
+
+    course_name: z
+      .string()
+      .trim()
+      .min(1, "Course name is required."),
+
+    department: z
+      .string()
+      .trim()
+      .min(1, "Department is required."),
+
+    section: z
+      .string()
+      .trim()
+      .min(1, "Section is required."),
+
+    teacher_id: z
+      .string()
+      .trim()
+      .min(1, "Teacher ID is required."),
+  }),
+});
+
+
+export const courseUpdateSchema = z.object({
+  params: z.object({
+    id: idParam,
+  }),
+
+  body: z
+    .object({
+      course_name: z
+        .string()
+        .trim()
+        .min(1)
+        .optional(),
+
+      department: z
+        .string()
+        .trim()
+        .min(1)
+        .optional(),
+
+      section: z
+        .string()
+        .trim()
+        .min(1)
+        .optional(),
+
+      teacher_id: z
+        .string()
+        .trim()
+        .min(1)
+        .optional(),
+    })
+    .refine(
+      (data) => Object.keys(data).length > 0,
+      {
+        message:
+          "At least one field must be provided for update.",
+      }
+    ),
+});
+
+
+export const courseListSchema = z.object({
+  query: z.object({
+    teacher_id: z
+      .string()
+      .trim()
+      .optional(),
+
+    department: z
+      .string()
+      .trim()
+      .optional(),
+  }),
+});
+
+
+export const courseIdSchema = z.object({
+  params: z.object({
+    id: idParam,
+  }),
+});
+
+
+
+/* =========================
+   ENROLLMENT VALIDATION
+========================= */
+
+export const enrollmentCreateSchema = z.object({
+  params: z.object({
+    course_id: idParam,
+  }),
+
+  body: z.object({
+    student_id: z
+      .string()
+      .trim()
+      .min(1, "Student ID is required."),
+  }),
+});
+
+
+export const enrollmentDeleteSchema = z.object({
+  params: z.object({
+    course_id: idParam,
+
+    student_id: idParam,
+  }),
+});
+
+
+
+
+
+
+
+
+
 
 /* =========================
    SESSION VALIDATION

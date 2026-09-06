@@ -7,9 +7,13 @@ export function validate(schema) {
         query: req.query,
       });
 
-      if (parsed.body) req.body = parsed.body;
-      if (parsed.params) req.params = parsed.params;
-      if (parsed.query) req.query = parsed.query;
+      if (parsed.body) {
+        req.body = parsed.body;
+      }
+
+      if (parsed.params) {
+        Object.assign(req.params, parsed.params);
+      }
 
       next();
     } catch (error) {

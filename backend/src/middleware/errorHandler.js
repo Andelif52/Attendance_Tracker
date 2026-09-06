@@ -1,6 +1,5 @@
 import { ZodError } from "zod";
 import { AppError } from "../utils/helpers.js";
-import { Prisma } from "@prisma/client";
 
 export function notFoundHandler(req, res) {
   res.status(404).json({
@@ -36,17 +35,23 @@ export function errorHandler(err, req, res, next) {
     return;
   }
 
-  if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    if (err.code === "P2002") {
-      res.status(409).json({
-        success: false,
-        message: "A record with this unique value already exists.",
-      });
-      return;
-    }
+  if (
+    err?.code === "already-exists" ||
+    err?.code === "duplicate"
+  ) {
+    res.status(409).json({
+      success: false,
+      message:
+        "A record with this unique value already exists.",
+    });
+    return;
   }
 
-  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+  if (
+    err instanceof SyntaxError &&
+    err.status === 400 &&
+    "body" in err
+  ) {
     res.status(400).json({
       success: false,
       message: "Invalid JSON body.",

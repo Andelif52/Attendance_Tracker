@@ -1,8 +1,12 @@
 import bcrypt from "bcryptjs";
 
-import { prisma } from "../config/db.js";
+import { db } from "../config/db.js";
 
-import { AppError, asyncHandler, publicUser } from "../utils/helpers.js";
+import {
+  AppError,
+  asyncHandler,
+  publicUser,
+} from "../utils/helpers.js";
 
 import {
   setAuthCookie,
@@ -10,34 +14,54 @@ import {
   signToken,
 } from "../utils/auth.js";
 
+const TEACHERS_COLLECTION = "teachers";
+
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, password, department, gender } = req.body;
+  const {
+    name,
+    email,
+    password,
+  } = req.body;
 
-  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedEmail =
+    email.trim().toLowerCase();
 
-  const existing = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
-  });
+  const existingSnapshot = await db
+    .collection(TEACHERS_COLLECTION)
+    .where(
+      "email",
+      "==",
+      normalizedEmail
+    )
+    .limit(1)
+    .get();
 
-  if (existing) {
-    throw new AppError("A user with this email already exists.", 409);
+  if (!existingSnapshot.empty) {
+    throw new AppError(
+      "A user with this email already exists.",
+      409
+    );
   }
 
-  const passwordHash = await bcrypt.hash(password, 12);
+  const passwordHash =
+    await bcrypt.hash(password, 12);
 
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email: normalizedEmail,
-      passwordHash,
-      department,
-      gender,
-      role: "TEACHER",
-    },
-  });
+  const teacherRef = db
+    .collection(TEACHERS_COLLECTION)
+    .doc();
+
+  const user = {
+    name,
+    email: normalizedEmail,
+    password_hash: passwordHash,
+    role: "teacher",
+    created_at: new Date(),
+  };
+
+  await teacherRef.set(user);
 
   const token = signToken({
-    userId: user.id,
+    userId: teacherRef.id,
     role: user.role,
   });
 
@@ -53,22 +77,48 @@ export const register = asyncHandler(async (req, res) => {
 });
 
 export const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const {
+    email,
+    password,
+  } = req.body;
 
-  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedEmail =
+    email.trim().toLowerCase();
 
-  const user = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
-  });
+  const snapshot = await db
+    .collection(TEACHERS_COLLECTION)
+    .where(
+      "email",
+      "==",
+      normalizedEmail
+    )
+    .limit(1)
+    .get();
 
-  if (!user) {
-    throw new AppError("Invalid email or password.", 401);
+  if (snapshot.empty) {
+    throw new AppError(
+      "Invalid email or password.",
+      401
+    );
   }
 
-  const matches = await bcrypt.compare(password, user.passwordHash);
+  const userDoc = snapshot.docs[0];
+
+  const user = {
+    id: userDoc.id,
+    ...userDoc.data(),
+  };
+
+  const matches = await bcrypt.compare(
+    password,
+    user.password_hash
+  );
 
   if (!matches) {
-    throw new AppError("Invalid email or password.", 401);
+    throw new AppError(
+      "Invalid email or password.",
+      401
+    );
   }
 
   const token = signToken({

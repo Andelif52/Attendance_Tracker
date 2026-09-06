@@ -1,4 +1,4 @@
-import { prisma } from "../config/db.js";
+import { db } from "../config/db.js";
 import { env } from "../config/env.js";
 import { AppError, asyncHandler } from "../utils/helpers.js";
 import { verifyToken } from "../utils/auth.js";
@@ -21,15 +21,19 @@ export const authenticate = asyncHandler(async (req, res, next) => {
     );
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: payload.userId },
-  });
+  const userDoc = await db
+    .collection("teachers")
+    .doc(payload.userId)
+    .get();
 
-  if (!user) {
+  if (!userDoc.exists) {
     throw new AppError("User no longer exists.", 401);
   }
 
-  req.user = user;
+  req.user = {
+    id: userDoc.id,
+    ...userDoc.data(),
+  };
 
   next();
 });
@@ -50,7 +54,7 @@ export function authorize(...roles) {
   };
 }
 
-export const requireAdmin = authorize("ADMIN");
+export const requireAdmin = authorize("admin");
 
 export const optionalDeviceOrAuth = asyncHandler(async (req, res, next) => {
   const deviceKey = req.header("x-device-key");

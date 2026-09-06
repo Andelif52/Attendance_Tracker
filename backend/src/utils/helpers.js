@@ -1,6 +1,7 @@
 export class AppError extends Error {
   constructor(message, statusCode = 400, details = null) {
     super(message);
+
     this.statusCode = statusCode;
     this.details = details;
   }
@@ -12,6 +13,16 @@ export function asyncHandler(fn) {
   };
 }
 
+function serializeDate(value) {
+  if (!value) return null;
+
+  if (typeof value.toDate === "function") {
+    return value.toDate();
+  }
+
+  return value;
+}
+
 export function publicUser(user) {
   if (!user) return null;
 
@@ -20,22 +31,33 @@ export function publicUser(user) {
     name: user.name,
     email: user.email,
     role: user.role,
-    department: user.department,
-    gender: user.gender,
-    createdAt: user.createdAt,
+    created_at: serializeDate(user.created_at),
   };
 }
 
 export function serializeStudent(student) {
   return {
-    id: student.id,
+    student_id: student.student_id ?? student.id,
     name: student.name,
-    varsityId: student.varsityId,
     department: student.department,
-    year: student.year,
-    semester: student.semester,
-    section: student.section,
-    createdAt: student.createdAt,
+    batch: student.batch ?? null,
+    email: student.email ?? null,
+    face_enrolled: student.face_enrolled ?? false,
+    is_active: student.is_active ?? true,
+    created_at: serializeDate(student.created_at),
+  };
+}
+
+export function serializeCourse(course) {
+  return {
+    course_id: course.id ?? course.course_id,
+    course_code: course.course_code,
+    course_name: course.course_name,
+    department: course.department,
+    section: course.section,
+    teacher_id: course.teacher_id,
+    total_classes: course.total_classes ?? 0,
+    created_at: serializeDate(course.created_at),
   };
 }
 
@@ -45,13 +67,18 @@ export function serializeRecord(record) {
     sessionId: record.sessionId,
     studentId: record.studentId,
     name: record.student?.name ?? null,
-    varsityId: record.student?.varsityId ?? null,
-    department: record.student?.department ?? null,
-    year: record.student?.year ?? null,
-    semester: record.student?.semester ?? null,
-    section: record.student?.section ?? null,
+    student_id:
+      record.student?.student_id ??
+      record.student?.id ??
+      null,
+    department:
+      record.student?.department ??
+      null,
+    batch:
+      record.student?.batch ??
+      null,
     attendanceStatus: record.attendanceStatus,
-    attendedAt: record.attendedAt,
+    attendedAt: serializeDate(record.attendedAt),
   };
 }
 
@@ -65,8 +92,8 @@ export function serializeSession(session, extra = {}) {
     semester: session.semester,
     section: session.section,
     status: session.status,
-    startedAt: session.startedAt,
-    endedAt: session.endedAt,
+    startedAt: serializeDate(session.startedAt),
+    endedAt: serializeDate(session.endedAt),
     ...extra,
   };
 }

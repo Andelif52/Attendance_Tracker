@@ -10,6 +10,7 @@ import morgan from "morgan";
 
 import { env } from "./config/env.js";
 
+
 import {
   errorHandler,
   notFoundHandler,
@@ -24,6 +25,10 @@ import adminStudentRoutes from "./routes/adminStudentRoutes.js";
 import sessionRoutes from "./routes/sessionRoutes.js";
 
 import teacherRoutes from "./routes/teacherRoutes.js";
+
+import courseRoutes from "./routes/courseRoutes.js";
+
+import enrollmentRoutes from "./routes/enrollmentRoutes.js";
 
 const app = express();
 
@@ -102,6 +107,27 @@ app.use(
   "/api/teachers",
   teacherRoutes
 );
+
+/* =========================
+   COURSES
+========================= */
+
+app.use(
+  "/api/courses",
+  courseRoutes
+);
+
+
+
+/* =========================
+   ENROLLMENTS
+========================= */
+
+app.use(
+  "/api/courses",
+  enrollmentRoutes
+);
+
 
 app.use(notFoundHandler);
 
