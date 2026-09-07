@@ -28,3 +28,27 @@ Thumbs.db
 # SQLite
 *.db
 *.db-journal
+
+
+# Python virtual environment
+backend/.venv/
+
+# AI/ML models
+backend/models/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+
+# Build files
+dist/
+build/
+.vite/
