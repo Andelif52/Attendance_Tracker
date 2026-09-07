@@ -24,7 +24,7 @@ function AppNav() {
 
       <div className="app-nav-user">
         <span>
-          {user?.name} · {user?.role === "ADMIN" ? "Admin" : "Teacher"}
+          {user?.name} · {user?.role === "admin" ? "Admin" : "Teacher"}
         </span>
         <button type="button" onClick={handleLogout}>
           Logout

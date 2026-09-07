@@ -4,6 +4,7 @@
  * FastAPI endpoints:
  *   POST /api/v1/attendance/sessions                    → SessionResponse (teacher/admin)
  *   PUT  /api/v1/attendance/sessions/{id}               → SessionResponse
+ *   GET  /api/v1/attendance/sessions                    → [SessionResponse]
  *   GET  /api/v1/attendance/sessions/{id}               → SessionDetailResponse
  *   GET  /api/v1/attendance/sessions/active             → SessionResponse | null
  *   POST /api/v1/attendance/sessions/{id}/record        → AttendanceRecordResponse
