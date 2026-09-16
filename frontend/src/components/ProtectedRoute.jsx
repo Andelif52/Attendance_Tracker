@@ -1,8 +1,14 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+const DEMO_MODE = true;
+
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
+
+  if (DEMO_MODE) {
+    return children;
+  }
 
   if (loading) {
     return (
