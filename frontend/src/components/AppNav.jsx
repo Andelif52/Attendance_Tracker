@@ -18,8 +18,15 @@ function AppNav() {
       <nav className="app-nav-links">
         <NavLink to="/dashboard">Dashboard</NavLink>
         <NavLink to="/students">Students</NavLink>
+        <NavLink to="/courses">Courses</NavLink>
         <NavLink to="/attendance">Attendance</NavLink>
         <NavLink to="/reports">Reports</NavLink>
+        {user?.role === "admin" && (
+          <NavLink to="/devices">Devices</NavLink>
+        )}
+        {user?.role === "admin" && (
+          <NavLink to="/teachers">Teachers</NavLink>
+        )}
       </nav>
 
       <div className="app-nav-user">

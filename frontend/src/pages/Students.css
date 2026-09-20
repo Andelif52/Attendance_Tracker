@@ -46,7 +46,7 @@
   padding: 11px 17px;
   border: none;
   border-radius: 9px;
-  background: #6366f1;
+  background: #CB2957;
   color: #ffffff;
   font-size: 13px;
   font-weight: 600;
@@ -61,7 +61,7 @@
 }
 
 .add-student-button:hover {
-  background: #4f46e5;
+  background: #ac2249;
   transform: translateY(-1px);
 }
 
@@ -88,7 +88,7 @@
 
 .student-stat-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 8px 20px rgba(10, 15, 27, 0.08);
 }
 
 .student-stat-icon {
@@ -466,5 +466,361 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
+  }
+}
+
+
+/* Messages */
+
+.students-message {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.students-message.success {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.students-message.error {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+
+/* Student Table Extra */
+
+.student-email {
+  display: block;
+}
+
+.student-id {
+  color: #475569;
+  font-size: 12px;
+}
+
+.students-empty {
+  text-align: center;
+  padding: 30px;
+  color: #94a3b8;
+}
+
+
+/* Face Status */
+
+.face-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.face-status.enrolled {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.face-status.not-enrolled {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+
+/* Face Enrollment Button */
+
+.enroll-button {
+  border: none;
+  background: #CB2957;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.enroll-button:hover {
+  transform: translateY(-1px);
+  background: #ac1c45;
+}
+
+.enroll-button.enrolled {
+  background: #979696;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.enroll-button.enrolled:hover {
+  transform: translateY(-1px);
+  background: #ac1c45;
+}
+
+
+/* Modal Overlay */
+
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.auth-modal {
+  width: 100%;
+  max-width: 520px;
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+}
+
+.face-modal {
+  max-width: 650px;
+}
+
+
+/* Modal Header */
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 20px;
+}
+
+.modal-close {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+
+/* Student Form */
+
+.student-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.student-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.student-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.student-input:focus {
+  border-color: #818cf8;
+}
+
+
+/* Modal Buttons */
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.modal-secondary-button,
+.modal-primary-button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-secondary-button {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.modal-primary-button {
+  background: #6366f1;
+  color: white;
+}
+
+.modal-primary-button:hover {
+  background: #4f46e5;
+}
+
+
+/* Face Enrollment */
+
+.face-modal-title {
+  margin: 0;
+}
+
+.face-modal-description {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.enroll-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.enroll-tab {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  color: #475569;
+  cursor: pointer;
+}
+
+.enroll-tab.active {
+  background: #eef2ff;
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
+
+/* Camera */
+
+.camera-section,
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.camera-container,
+.upload-container {
+  height: 320px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.camera-video,
+.camera-preview,
+.upload-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-off {
+  text-align: center;
+  color: #64748b;
+}
+
+.camera-start-button,
+.capture-button,
+.secondary-action-button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.camera-start-button,
+.capture-button {
+  background: #6366f1;
+  color: white;
+}
+
+.secondary-action-button {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.camera-actions {
+  display: flex;
+  gap: 10px;
+}
+
+
+/* Upload */
+
+.upload-description {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.upload-input {
+  margin-top: 10px;
+}
+
+
+/* Enrollment Message */
+
+.enroll-message {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.enroll-message.success {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.enroll-message.error {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+
+/* Responsive Modal */
+
+@media (max-width: 700px) {
+  .student-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .camera-container,
+  .upload-container {
+    height: 250px;
   }
 }

@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getDashboardStats } from "../api/reports";
 import { listCourses } from "../api/courses";
+import { listDevices } from "../api/devices";
 import { listSessions, getActiveSession, startSession, endSession } from "../api/attendance";
-
 function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -25,21 +25,26 @@ function Dashboard() {
   const [activeSession, setActiveSession] = useState(null);
 
   const [selectedCourseId, setSelectedCourseId] = useState("");
+  const [selectedDeviceId, setSelectedDeviceId] = useState("");
+  const [devices, setDevices] = useState([]);
   const [lateThreshold, setLateThreshold] = useState(15);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
 
   const loadData = async () => {
     try {
-      const [statsData, coursesData, sessionsData, activeData] = await Promise.all([
+      const [statsData, coursesData, devicesData, sessionsData, activeData] = await Promise.all([
         getDashboardStats().catch(() => null),
         listCourses().catch(() => ({ courses: [] })),
+        listDevices().catch(() => []),
         listSessions({ limit: 10 }).catch(() => []),
         getActiveSession().catch(() => null),
       ]);
 
+
       if (statsData) setStats(statsData);
       if (coursesData?.courses) setCourses(coursesData.courses);
+      if (Array.isArray(devicesData)) setDevices(devicesData);
       if (Array.isArray(sessionsData)) setSessions(sessionsData);
       setActiveSession(activeData);
     } catch (error) {
@@ -58,6 +63,11 @@ function Dashboard() {
       return;
     }
 
+    if (!selectedDeviceId) {
+      setMessage("Please select a device to start a session.");
+      return;
+    }
+
     setBusy(true);
     setMessage("");
 
@@ -65,9 +75,11 @@ function Dashboard() {
       const newSession = await startSession({
         course_id: selectedCourseId,
         late_threshold_minutes: Number(lateThreshold) || 15,
+        device_id: selectedDeviceId,
       });
       setMessage(`Session started successfully for course ID ${selectedCourseId}.`);
       setSelectedCourseId("");
+      setSelectedDeviceId("");
       await loadData();
       // Optionally navigate directly to Attendance page
       navigate("/attendance");
@@ -218,6 +230,25 @@ function Dashboard() {
                   </option>
                 ))}
               </select>
+              <select
+                value={selectedDeviceId}
+                onChange={(e) => setSelectedDeviceId(e.target.value)}
+                required
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: "8px",
+                  border: "1px solid #ccc",
+                  background: "#fff",
+                }}
+              >
+                <option value="">-- Select Device --</option>
+
+                {devices.map((device) => (
+                  <option key={device.device_id} value={device.device_id}>
+                    {device.name} ({device.device_id})
+                  </option>
+                ))}
+              </select>
 
               <input
                 placeholder="Late threshold (minutes)"
@@ -289,9 +320,9 @@ function Dashboard() {
                   <span className="activity-time">
                     {session.start_time
                       ? new Date(session.start_time).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
                       : "—"}
                   </span>
                 </div>

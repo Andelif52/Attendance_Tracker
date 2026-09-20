@@ -25,7 +25,11 @@ import { apiRequest } from "./client";
 
 /**
  * Start a new attendance session for a course.
- * @param {{ course_id: string, late_threshold_minutes?: number }} data
+ * @param {{
+ *   course_id: string,
+ *   late_threshold_minutes?: number,
+ *   device_id: string
+ * }} data
  */
 export async function startSession(data) {
   return apiRequest("/api/v1/attendance/sessions", {
@@ -33,6 +37,7 @@ export async function startSession(data) {
     body: {
       course_id: data.course_id,
       late_threshold_minutes: data.late_threshold_minutes ?? 15,
+      device_id: data.device_id,
     },
   });
 }

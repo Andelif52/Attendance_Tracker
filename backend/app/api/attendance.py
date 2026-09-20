@@ -48,22 +48,6 @@ async def update_session(
     )
 
 
-@router.get("/sessions", response_model=list[SessionResponse])
-async def list_sessions(
-    course_id: str | None = Query(None),
-    status: str | None = Query(None),
-    limit: int = Query(50, ge=1, le=100),
-    current_user: UserInToken = Depends(require_teacher_or_admin),
-):
-    """List recent attendance sessions for the authenticated teacher."""
-    return await attendance_service.list_sessions(
-        teacher_id=current_user.user_id,
-        course_id=course_id,
-        status=status,
-        limit=limit,
-    )
-
-
 @router.get("/sessions/active", response_model=SessionResponse | None)
 async def get_active_session(
     course_id: str | None = Query(None),

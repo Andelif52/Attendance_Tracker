@@ -39,7 +39,13 @@ export async function listCourses(filters = {}) {
 export async function createCourse(data) {
   return apiRequest("/api/v1/courses/", {
     method: "POST",
-    body: data,
+    body: {
+      course_name: data.name,
+      course_code: data.code,
+      department: data.department,
+      section: data.section,
+      teacher_id: data.teacher_id,
+    },
   });
 }
 

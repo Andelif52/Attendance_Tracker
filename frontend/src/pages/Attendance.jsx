@@ -1,8 +1,9 @@
 import "./Attendance.css";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { listSessions, getSession, getActiveSession, startSession, endSession } from "../api/attendance";
-import { listCourses } from "../api/courses";
+import { listSessions, getSession, getActiveSession, startSession, endSession, recordAttendance } from "../api/attendance";
+import { listCourses, getCourseStudents } from "../api/courses";
 import { recognizeFace } from "../api/faces";
+import { listDevices } from "../api/devices";
 
 function Attendance() {
   const [sessions, setSessions] = useState([]);
@@ -10,11 +11,15 @@ function Attendance() {
   const [selectedSessionData, setSelectedSessionData] = useState(null);
   const [activeSession, setActiveSession] = useState(null);
   const [courses, setCourses] = useState([]);
+  const [devices, setDevices] = useState([]);
+  const [enrolledStudents, setEnrolledStudents] = useState([]);
+  const [manualAttendance, setManualAttendance] = useState({});
 
   // Start Session Modal
   const [showStartModal, setShowStartModal] = useState(false);
   const [newSessionCourseId, setNewSessionCourseId] = useState("");
   const [newSessionLateThreshold, setNewSessionLateThreshold] = useState(15);
+  const [newSessionDeviceId, setNewSessionDeviceId] = useState("");
 
   // Status & error messages
   const [message, setMessage] = useState("");
@@ -38,16 +43,23 @@ function Attendance() {
   // --- Load Initial Data ---
   const loadData = async () => {
     try {
-      const [sessionsList, activeData, coursesData] = await Promise.all([
+      const [sessionsList, activeData, coursesData, devicesData] = await Promise.all([
         listSessions({ limit: 30 }).catch(() => []),
         getActiveSession().catch(() => null),
         listCourses().catch(() => ({ courses: [] })),
+        listDevices().catch(() => []),
       ]);
 
       const sessArr = Array.isArray(sessionsList) ? sessionsList : [];
       setSessions(sessArr);
       setActiveSession(activeData);
       setCourses(coursesData.courses || []);
+      setDevices(devicesData || []);
+
+      if (activeData?.course_id) {
+        await loadEnrolledStudents(activeData.course_id);
+      }
+
 
       // Default select the active session, or first session in list
       if (activeData) {
@@ -88,6 +100,21 @@ function Attendance() {
     await loadSessionDetails(id);
   };
 
+
+  const loadEnrolledStudents = async (courseId) => {
+    if (!courseId) return;
+
+    try {
+      const data = await getCourseStudents(courseId);
+      setEnrolledStudents(data);
+    } catch (err) {
+      setMessage("Failed to load enrolled students.");
+    }
+  };
+
+
+
+
   // --- Start & End Sessions ---
   const handleStartSession = async (e) => {
     e.preventDefault();
@@ -99,6 +126,7 @@ function Attendance() {
       const created = await startSession({
         course_id: newSessionCourseId,
         late_threshold_minutes: Number(newSessionLateThreshold) || 15,
+        device_id: newSessionDeviceId,
       });
       setShowStartModal(false);
       setMessage(`Started session for course ${newSessionCourseId}`);
@@ -126,6 +154,37 @@ function Attendance() {
       setBusy(false);
     }
   };
+
+
+  const handleManualAttendance = async (studentId) => {
+    if (!activeSession) return;
+
+    try {
+      const response = await recordAttendance(
+        activeSession.session_id,
+        {
+          student_id: studentId,
+          confidence: 0,
+          method: "manual",
+        }
+      );
+
+      // Backend decides present/late
+      setManualAttendance((prev) => ({
+        ...prev,
+        [studentId]: response.status,
+      }));
+
+      await loadSessionDetails(activeSession.session_id);
+
+    } catch (err) {
+      setMessage(err.message || "Failed to mark attendance.");
+    }
+  };
+
+
+
+
 
   // --- Camera Operations ---
   const startCamera = async () => {
@@ -808,226 +867,187 @@ function Attendance() {
         </div>
       </div>
 
-      {/* ================= SESSIONS & RECORDS TABLE ================= */}
-      <div className="attendance-toolbar">
-        <div className="attendance-filter-wrapper">
-          <label>View Session</label>
-          <select
-            value={selectedSessionId}
-            onChange={(e) => handleSelectSession(e.target.value)}
-          >
-            {sessions.map((session) => {
-              const cName =
-                courses.find((c) => c.course_id === session.course_id)?.course_name ||
-                session.course_id;
-              return (
-                <option key={session.session_id} value={session.session_id}>
-                  #{session.session_id.slice(-6)} · {cName} · {session.session_date} ({session.status})
-                </option>
-              );
-            })}
-          </select>
-        </div>
 
-        <button
-          className="export-button"
-          type="button"
-          onClick={() => loadSessionDetails(selectedSessionId)}
-        >
-          ↻ Refresh Records
-        </button>
-      </div>
+      {/* ================= MANUAL ATTENDANCE TABLE ================= */}
+      {activeSession && (
+        <div className="manual-attendance-card">
 
-      <div className="attendance-card">
-        <div className="attendance-card-header">
-          <div>
-            <h2>
-              {currentSession
-                ? `Session #${currentSession.session_id.slice(-6)} · ${
-                    courses.find((c) => c.course_id === currentSession.course_id)?.course_name ||
-                    currentSession.course_id
-                  }`
-                : "No session selected"}
-            </h2>
-            <p>
-              {currentSession
-                ? `Started ${new Date(currentSession.start_time).toLocaleString()} · Status: ${
-                    currentSession.status
-                  }`
-                : "Start a session to begin logging."}
-            </p>
-          </div>
-        </div>
+          <h2>
+            Manual Attendance
+          </h2>
 
-        <div className="attendance-table-wrapper">
-          <table className="attendance-table">
+
+          <table className="manual-attendance-table">
+
             <thead>
               <tr>
-                <th>Student</th>
                 <th>Student ID</th>
-                <th>Detected Time</th>
-                <th>Confidence</th>
-                <th>Method</th>
+                <th>Name</th>
+                <th>Department</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
+
+
             <tbody>
-              {records.map((record) => (
-                <tr key={record.record_id || record.student_id}>
+
+              {enrolledStudents.map((student) => (
+                <tr key={student.student_id}>
+
                   <td>
-                    <div className="attendance-student">
-                      <div className="attendance-avatar">
-                        {(record.student_name || record.student_id || "?").slice(0, 2).toUpperCase()}
-                      </div>
-                      <div>
-                        <strong>{record.student_name || record.student_id}</strong>
-                      </div>
+                    {student.student_id}
+                  </td>
+
+
+                  <td>
+                    {student.name}
+                  </td>
+
+
+                  <td>
+                    {student.department}
+                  </td>
+
+
+                  <td>
+                    <span
+                      className={`manual-status ${manualAttendance[student.student_id] || "absent"
+                        }`}
+                    >
+                      {manualAttendance[student.student_id] || "Absent"}
+                    </span>
+                  </td>
+
+
+                  <td>
+
+                    <div className="manual-action-buttons">
+
+                      <button
+                        className="manual-attendance-btn"
+                        onClick={() =>
+                          handleManualAttendance(student.student_id)
+                        }
+                      >
+                        Mark Attendance
+                      </button>
+
                     </div>
+
                   </td>
-                  <td>
-                    <code>{record.student_id}</code>
-                  </td>
-                  <td>
-                    <span className="check-in-time">
-                      {record.detected_at
-                        ? new Date(record.detected_at).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                          })
-                        : "—"}
-                    </span>
-                  </td>
-                  <td>
-                    {typeof record.confidence === "number" && record.confidence > 0
-                      ? `${(record.confidence * 100).toFixed(1)}%`
-                      : "—"}
-                  </td>
-                  <td style={{ textTransform: "capitalize", color: "#64748b" }}>
-                    {record.method || "face"}
-                  </td>
-                  <td>
-                    <span className={`attendance-status ${(record.status || "absent").toLowerCase()}`}>
-                      <span></span>
-                      {record.status}
-                    </span>
-                  </td>
+
+
                 </tr>
               ))}
 
-              {records.length === 0 && (
-                <tr>
-                  <td colSpan={6} style={{ textAlign: "center", padding: "30px", color: "#64748b" }}>
-                    No attendance records logged for this session yet.
-                  </td>
-                </tr>
-              )}
             </tbody>
+
           </table>
+
         </div>
-      </div>
+      )}
+
 
       {/* ================= START SESSION MODAL ================= */}
       {showStartModal && (
-        <div
-          className="auth-overlay"
-          onClick={() => setShowStartModal(false)}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            className="auth-modal"
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: "#fff",
-              padding: "24px",
-              borderRadius: "14px",
-              width: "100%",
-              maxWidth: "440px",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
-              <h2>Start New Attendance Session</h2>
+        <div className="modal-overlay">
+
+          <div className="start-session-modal">
+
+            <h2>
+              Start New Attendance Session
+            </h2>
+
+            <label>
+              Select Course
+            </label>
+
+            <select
+              value={newSessionCourseId}
+              onChange={(e) =>
+                setNewSessionCourseId(e.target.value)
+              }
+            >
+              <option value="">
+                -- Choose Course --
+              </option>
+
+              {courses.map((course) => (
+                <option
+                  key={course.course_id}
+                  value={course.course_id}
+                >
+                  {course.course_name}
+                </option>
+              ))}
+
+            </select>
+
+            <label>
+              Select Device
+            </label>
+
+            <select
+              value={newSessionDeviceId}
+              onChange={(e) => setNewSessionDeviceId(e.target.value)}
+            >
+              <option value="">
+                -- Choose Device --
+              </option>
+
+              {devices.map((device) => (
+                <option
+                  key={device.device_id}
+                  value={device.device_id}
+                >
+                  {device.name} ({device.device_id})
+                </option>
+              ))}
+            </select>
+
+            <label>
+              Late Threshold (minutes)
+            </label>
+
+            <input
+              type="number"
+              value={newSessionLateThreshold}
+              onChange={(e) =>
+                setNewSessionLateThreshold(e.target.value)
+              }
+            />
+
+
+            <div className="modal-actions">
+
               <button
                 type="button"
+                className="modal-actions-button"
                 onClick={() => setShowStartModal(false)}
-                style={{ background: "none", border: "none", fontSize: "20px", cursor: "pointer" }}
               >
-                ×
+                Cancel
               </button>
+
+
+              <button
+                type="button"
+                className="modal-actions-button"
+                onClick={handleStartSession}
+                disabled={busy}
+              >
+                {busy ? "Starting..." : "Start Session"}
+              </button>
+
             </div>
 
-            <form onSubmit={handleStartSession} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-              <div>
-                <label style={{ fontSize: "13px", fontWeight: 600 }}>Select Course</label>
-                <select
-                  value={newSessionCourseId}
-                  onChange={(e) => setNewSessionCourseId(e.target.value)}
-                  required
-                  style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #ccc", marginTop: "4px" }}
-                >
-                  <option value="">-- Choose Course --</option>
-                  {courses.map((course) => (
-                    <option key={course.course_id} value={course.course_id}>
-                      {course.course_name} ({course.course_code} · Sec {course.section})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label style={{ fontSize: "13px", fontWeight: 600 }}>Late Threshold (minutes)</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="120"
-                  value={newSessionLateThreshold}
-                  onChange={(e) => setNewSessionLateThreshold(e.target.value)}
-                  required
-                  style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #ccc", marginTop: "4px" }}
-                />
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "10px" }}>
-                <button
-                  type="button"
-                  onClick={() => setShowStartModal(false)}
-                  style={{ padding: "8px 16px", borderRadius: "6px", border: "1px solid #ccc", background: "#f1f5f9" }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={busy}
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: "6px",
-                    border: "none",
-                    background: "#CB2957",
-                    color: "#fff",
-                    fontWeight: 600,
-                  }}
-                >
-                  {busy ? "Starting..." : "Start Session"}
-                </button>
-              </div>
-            </form>
           </div>
+
         </div>
       )}
+
     </div>
   );
 }
 
 export default Attendance;
-

@@ -336,40 +336,6 @@ async def get_active_session(
     )
 
 
-async def list_sessions(
-    teacher_id: str,
-    course_id: str | None = None,
-    status: str | None = None,
-    limit: int = 50,
-) -> list[SessionResponse]:
-    """List attendance sessions owned by a teacher, newest first."""
-    db = get_db()
-    query = db.collection(SESSIONS_COLLECTION).where(
-        "teacher_id", "==", teacher_id
-    )
-
-    if course_id:
-        query = query.where("course_id", "==", course_id)
-    if status:
-        query = query.where("status", "==", status)
-
-    docs = query.limit(limit).get()
-    sessions = []
-    for doc in docs:
-        session_data = doc.to_dict()
-        counts = await _get_session_counts(db, doc.id)
-        sessions.append(
-            SessionResponse(
-                session_id=doc.id,
-                **session_data,
-                **counts,
-            )
-        )
-
-    sessions.sort(key=lambda session: session.start_time, reverse=True)
-    return sessions
-
-
 async def get_student_attendance(
     student_id: str,
     course_id: str | None = None,

@@ -7,6 +7,11 @@ import Reports from "./pages/Reports";
 import Homepage from "./pages/Homepage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppNav from "./components/AppNav";
+import Devices from "./pages/Devices";
+import Teachers from "./pages/Teachers";
+import AdminRoute from "./components/AdminRoute";
+import Courses from "./pages/Courses";
+
 
 function ProtectedLayout({ children }) {
   return (
@@ -17,11 +22,15 @@ function ProtectedLayout({ children }) {
   );
 }
 
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         <Route path="/" element={<Homepage />} />
+
+
         <Route
           path="/dashboard"
           element={
@@ -32,6 +41,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+
         <Route
           path="/students"
           element={
@@ -42,6 +53,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+
         <Route
           path="/attendance"
           element={
@@ -52,6 +65,18 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/courses"
+          element={
+            <ProtectedRoute>
+              <ProtectedLayout>
+                <Courses />
+              </ProtectedLayout>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/reports"
           element={
@@ -62,6 +87,32 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+
+        <Route
+          path="/devices"
+          element={
+            <AdminRoute>
+              <ProtectedLayout>
+                <Devices />
+              </ProtectedLayout>
+            </AdminRoute>
+          }
+        />
+
+
+        <Route
+          path="/teachers"
+          element={
+            <AdminRoute>
+              <ProtectedLayout>
+                <Teachers />
+              </ProtectedLayout>
+            </AdminRoute>
+          }
+        />
+
+
       </Routes>
     </BrowserRouter>
   );
