@@ -11,7 +11,7 @@ function Devices() {
   const [devices, setDevices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
-  
+
 
   const [showForm, setShowForm] = useState(false);
 
@@ -215,11 +215,15 @@ function Devices() {
           <div>
             <h2>Registered Devices</h2>
 
-            <p>
-              {loading
-                ? <Loader/>
-                : `${devices.length} device${devices.length === 1 ? "" : "s"} found`}
-            </p>
+            <div>
+              {loading ? (
+                <Loader />
+              ) : (
+                <p>
+                  {devices.length} device{devices.length === 1 ? "" : "s"} found
+                </p>
+              )}
+            </div>
           </div>
 
 

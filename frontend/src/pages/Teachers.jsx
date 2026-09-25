@@ -127,11 +127,15 @@ function Teachers() {
           <div>
             <h2>All Teachers</h2>
 
-            <p>
-              {loading
-                ? <Loader/>
-                : `${teachers.length} teacher${teachers.length === 1 ? "" : "s"} found`}
-            </p>
+            <div>
+              {loading ? (
+                <Loader />
+              ) : (
+                <p>
+                  {teachers.length} teacher{teachers.length === 1 ? "" : "s"} found
+                </p>
+              )}
+            </div>
           </div>
         </div>
 

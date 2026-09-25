@@ -158,9 +158,11 @@
 
 
 .teachers-details div {
-  background: #EEEEEE;
-  padding: 16px;
-  border-radius: 8px;
+    background: #EEEEEE;
+    padding: 16px;
+    border-radius: 18px;
+    border-style: ridge;
+    border-color: #CB2957;
 }
 
 

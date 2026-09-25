@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { getDashboardStats } from "../api/reports";
 import { listCourses } from "../api/courses";
 import { listDevices } from "../api/devices";
-import { listSessions, getActiveSession, startSession, endSession } from "../api/attendance";
+import { getActiveSession, startSession, endSession } from "../api/attendance";
 import Loader from "../components/Loader";
 
 function Dashboard() {
@@ -23,7 +23,7 @@ function Dashboard() {
   });
 
   const [courses, setCourses] = useState([]);
-  const [sessions, setSessions] = useState([]);
+
   const [activeSession, setActiveSession] = useState(null);
 
   const [selectedCourseId, setSelectedCourseId] = useState("");
@@ -41,7 +41,6 @@ function Dashboard() {
         getDashboardStats().catch(() => null),
         listCourses().catch(() => ({ courses: [] })),
         listDevices().catch(() => []),
-        listSessions({ limit: 10 }).catch(() => []),
         getActiveSession().catch(() => null),
       ]);
 
@@ -49,8 +48,8 @@ function Dashboard() {
       if (statsData) setStats(statsData);
       if (coursesData?.courses) setCourses(coursesData.courses);
       if (Array.isArray(devicesData)) setDevices(devicesData);
-      if (Array.isArray(sessionsData)) setSessions(sessionsData);
       setActiveSession(activeData);
+
     } catch (error) {
       setMessage(error.message || "Failed to load dashboard data.");
     } finally {

@@ -1,12 +1,11 @@
 import "./Attendance.css";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { listSessions, getSession, getActiveSession, startSession, endSession, recordAttendance } from "../api/attendance";
+import { getSession, getActiveSession, startSession, endSession, recordAttendance } from "../api/attendance";
 import { listCourses, getCourseStudents } from "../api/courses";
 import { recognizeFace } from "../api/faces";
 import { listDevices } from "../api/devices";
 
 function Attendance() {
-  const [sessions, setSessions] = useState([]);
   const [selectedSessionId, setSelectedSessionId] = useState("");
   const [selectedSessionData, setSelectedSessionData] = useState(null);
   const [activeSession, setActiveSession] = useState(null);
@@ -43,15 +42,12 @@ function Attendance() {
   // --- Load Initial Data ---
   const loadData = async () => {
     try {
-      const [sessionsList, activeData, coursesData, devicesData] = await Promise.all([
-        listSessions({ limit: 30 }).catch(() => []),
+      const [activeData, coursesData, devicesData] = await Promise.all([
         getActiveSession().catch(() => null),
         listCourses().catch(() => ({ courses: [] })),
         listDevices().catch(() => []),
       ]);
 
-      const sessArr = Array.isArray(sessionsList) ? sessionsList : [];
-      setSessions(sessArr);
       setActiveSession(activeData);
       setCourses(coursesData.courses || []);
       setDevices(devicesData || []);
@@ -60,15 +56,11 @@ function Attendance() {
         await loadEnrolledStudents(activeData.course_id);
       }
 
-
-      // Default select the active session, or first session in list
       if (activeData) {
         setSelectedSessionId(activeData.session_id);
         await loadSessionDetails(activeData.session_id);
-      } else if (sessArr.length > 0) {
-        setSelectedSessionId(sessArr[0].session_id);
-        await loadSessionDetails(sessArr[0].session_id);
       }
+
     } catch (err) {
       setMessage(err.message || "Failed to load attendance sessions.");
     }
