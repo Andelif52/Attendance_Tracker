@@ -42,15 +42,18 @@
 
 
 .courses-table th {
-    background: #eeeeee;
+    background: #cb2957;
     padding: 14px;
-    text-align: left;
+    text-align: center;
+    color: #ffffff;
 }
 
 
 .courses-table td {
     padding: 14px;
     border-bottom: 1px solid #ddd;
+    text-align: center;
+    font-weight: 500;
 }
 
 
@@ -58,6 +61,7 @@
 .action-buttons {
     display: flex;
     gap: 8px;
+    justify-content: center;
 }
 
 

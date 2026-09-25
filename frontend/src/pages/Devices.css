@@ -140,16 +140,19 @@
 
 
 .devices-table th {
-  background: #EEEEEE;
-  text-align: left;
-  padding: 12px;
+    background: #CB2957;
+    text-align: left;
+    padding: 12px;
+    text-decoration: double;
+    color: white;
+    font-family: revert;
 }
-
 
 
 .devices-table td {
   padding: 12px;
   border-bottom: 1px solid #DDDDDD;
+  font-weight: 500;
 }
 
 
@@ -207,4 +210,8 @@
   padding: 12px;
   margin: 15px 0;
   border-radius: 6px;
+}
+
+.devices-table-head{
+  background-color: #CB2957;
 }

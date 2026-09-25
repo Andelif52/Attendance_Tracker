@@ -13,7 +13,7 @@ function AppNav() {
 
   return (
     <header className="app-nav">
-      <div className="app-nav-brand">Attendance Tracker</div>
+      <div className="app-nav-brand" onClick={() => navigate("/dashboard")}>Attendance Tracker</div>
 
       <nav className="app-nav-links">
         <NavLink to="/dashboard">Dashboard</NavLink>
@@ -30,9 +30,14 @@ function AppNav() {
       </nav>
 
       <div className="app-nav-user">
+        <div className="app-nav-user-name">
         <span>
-          {user?.name} · {user?.role === "admin" ? "Admin" : "Teacher"}
+          {user?.name} 
         </span>
+        <span>
+          {user?.role === "admin" ? "Admin" : "Teacher"}
+        </span>
+        </div>
         <button type="button" onClick={handleLogout}>
           Logout
         </button>

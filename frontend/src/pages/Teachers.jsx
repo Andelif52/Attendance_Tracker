@@ -1,6 +1,7 @@
 import "./Teachers.css";
 import { useEffect, useState } from "react";
 import { listTeachers, getTeacher, registerTeacher } from "../api/teachers";
+import Loader from "../components/Loader";
 
 function Teachers() {
   const [teachers, setTeachers] = useState([]);
@@ -128,7 +129,7 @@ function Teachers() {
 
             <p>
               {loading
-                ? "Loading teachers..."
+                ? <Loader/>
                 : `${teachers.length} teacher${teachers.length === 1 ? "" : "s"} found`}
             </p>
           </div>

@@ -198,7 +198,7 @@
 }
 
 .search-box input:focus {
-  border-color: #818cf8;
+  border-color: #CB2957;
   box-shadow: 0 0 0 3px #eef2ff;
 }
 
@@ -226,7 +226,7 @@
 
 .class-filter:focus,
 .status-filter:focus {
-  border-color: #818cf8;
+  border-color: #CB2957;
 }
 
 /* Table */
@@ -244,11 +244,11 @@
 
 .students-table th {
   padding: 13px 12px;
-  text-align: left;
-  background: #f8fafc;
+  text-align: center;
+  background: #cb2957;;
   border-top: 1px solid #eef2f7;
   border-bottom: 1px solid #eef2f7;
-  color: #64748b;
+  color: #fcfcfc;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -258,9 +258,11 @@
 .students-table td {
   padding: 15px 12px;
   border-bottom: 1px solid #f1f5f9;
-  color: #64748b;
-  font-size: 12px;
+  color: #050505;
+  font-size: 15px;
   white-space: nowrap;
+  text-align: center;
+  font-weight: 400;
 }
 
 .students-table tbody tr {
@@ -647,7 +649,7 @@
 }
 
 .student-input:focus {
-  border-color: #818cf8;
+  border-color: #CB2957;
 }
 
 

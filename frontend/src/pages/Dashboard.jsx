@@ -6,6 +6,8 @@ import { getDashboardStats } from "../api/reports";
 import { listCourses } from "../api/courses";
 import { listDevices } from "../api/devices";
 import { listSessions, getActiveSession, startSession, endSession } from "../api/attendance";
+import Loader from "../components/Loader";
+
 function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -30,8 +32,10 @@ function Dashboard() {
   const [lateThreshold, setLateThreshold] = useState(15);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
+    setLoading(true);
     try {
       const [statsData, coursesData, devicesData, sessionsData, activeData] = await Promise.all([
         getDashboardStats().catch(() => null),
@@ -49,6 +53,8 @@ function Dashboard() {
       setActiveSession(activeData);
     } catch (error) {
       setMessage(error.message || "Failed to load dashboard data.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,6 +93,7 @@ function Dashboard() {
       setMessage(error.message || "Failed to start session.");
     } finally {
       setBusy(false);
+      
     }
   };
 
@@ -108,6 +115,7 @@ function Dashboard() {
 
   return (
     <div className="dashboard">
+      
       <div className="dashboard-header">
         <div className="dashboard-title">
           <h1>Dashboard</h1>
@@ -173,7 +181,9 @@ function Dashboard() {
       </div>
 
       <div className="dashboard-content">
-        <div className="attendance-card">
+        {loading? (
+          <Loader/>
+        ): (<div className="attendance-card">
           <div className="card-header">
             <div>
               <h2>Start Attendance Session</h2>
@@ -284,55 +294,10 @@ function Dashboard() {
               {message}
             </p>
           )}
-        </div>
+        </div>)}
+        
 
-        <div className="activity-card">
-          <div className="card-header">
-            <div>
-              <h2>Recent Sessions</h2>
-              <p>Latest attendance logs from Firebase</p>
-            </div>
-            <Link to="/attendance" className="view-button">
-              View All
-            </Link>
-          </div>
 
-          <div className="activity-list">
-            {sessions.slice(0, 6).map((session) => {
-              const cName =
-                courses.find((c) => c.course_id === session.course_id)?.course_name ||
-                session.course_id;
-              return (
-                <div className="activity-item" key={session.session_id}>
-                  <div className="activity-avatar">
-                    {(cName || "AS").slice(0, 2).toUpperCase()}
-                  </div>
-                  <div className="activity-info">
-                    <strong>{cName}</strong>
-                    <p>
-                      Date: {session.session_date} · Status:{" "}
-                      <span style={{ textTransform: "capitalize", fontWeight: 600 }}>
-                        {session.status}
-                      </span>{" "}
-                      · Present: {session.present_count || 0}
-                    </p>
-                  </div>
-                  <span className="activity-time">
-                    {session.start_time
-                      ? new Date(session.start_time).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                      : "—"}
-                  </span>
-                </div>
-              );
-            })}
-            {sessions.length === 0 && (
-              <p className="dashboard-description">No sessions recorded yet.</p>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );

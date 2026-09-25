@@ -406,12 +406,13 @@ function Attendance() {
         <div
           style={{
             background: "#fff",
-            borderLeft: "6px solid #64748b",
+            borderLeft: "6px solid #CB2957",
             padding: "14px 20px",
             borderRadius: "10px",
             marginBottom: "24px",
-            fontSize: "14px",
+            fontSize: "15px",
             color: "#475569",
+            fontWeight: "600",
           }}
         >
           No session currently running. You can test face recognition and liveness anytime below, or start a new

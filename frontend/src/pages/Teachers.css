@@ -97,12 +97,16 @@
   border-collapse: collapse;
 }
 
+.teachers-table tr {
+  border-radius: 10px;
+}
 
 
 .teachers-table th {
-  background: #EEEEEE;
+  background: #CB2957;
   padding: 12px;
   text-align: left;
+  color: white;
 }
 
 
@@ -110,6 +114,11 @@
 .teachers-table td {
   padding: 12px;
   border-bottom: 1px solid #DDDDDD;
+  font-weight: 600;
+}
+
+.teachers-table tbody {
+  border-radius: 5px;
 }
 
 

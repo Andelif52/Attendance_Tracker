@@ -5,11 +5,13 @@ import {
   createDevice,
   updateDeviceStatus,
 } from "../api/devices";
+import Loader from "../components/Loader";
 
 function Devices() {
   const [devices, setDevices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  
 
   const [showForm, setShowForm] = useState(false);
 
@@ -215,7 +217,7 @@ function Devices() {
 
             <p>
               {loading
-                ? "Loading devices..."
+                ? <Loader/>
                 : `${devices.length} device${devices.length === 1 ? "" : "s"} found`}
             </p>
           </div>
@@ -237,7 +239,7 @@ function Devices() {
           <table className="devices-table">
 
             <thead>
-              <tr>
+              <tr className="devices-table-head">
                 <th>Device ID</th>
                 <th>Name</th>
                 <th>Location</th>

@@ -2,7 +2,7 @@ import "./Reports.css";
 import { useEffect, useMemo, useState } from "react";
 import { listCourses } from "../api/courses";
 import { getDailyReport, getWeeklyReport, getMonthlyReport, getStudentReport } from "../api/reports";
-import { listStudents } from "../api/students";
+import Loader from "../components/Loader";
 
 
 
@@ -22,6 +22,7 @@ function Reports() {
 
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [studentReportLoading, setStudentReportLoading] = useState(false);
 
 
   const today = new Date().toISOString().split("T")[0];
@@ -31,11 +32,14 @@ function Reports() {
 
 
   async function loadCourses() {
+    setLoading(true);
     try {
       const data = await listCourses();
       setCourses(data.courses || []);
     } catch (err) {
       setMessage(err.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -117,6 +121,7 @@ function Reports() {
     }
 
     try {
+      setStudentReportLoading(true);
       setStudentMessage("");
 
       const data = await getStudentReport(studentId.trim());
@@ -132,6 +137,8 @@ function Reports() {
       setStudentMessage(
         err.message || "Failed to load student report."
       );
+    } finally {
+      setStudentReportLoading(false);
     }
   }
 
@@ -189,99 +196,82 @@ function Reports() {
   return (
     <div className="reports-page">
 
-      <div className="reports-header">
-        <div>
-          <p className="reports-subtitle">
-            Attendance Overview
-          </p>
+      <div className="reports-top-section">
 
-          <h1>Reports</h1>
+        <div className="reports-header">
+          <div>
+            <p className="reports-subtitle">
+              Attendance Overview
+            </p>
 
-          <p className="reports-description">
-            View attendance reports by day, week, month and course.
-          </p>
-        </div>
-      </div>
+            <h1>Reports</h1>
 
-
-
-      {message && (
-        <p className="reports-error">
-          {message}
-        </p>
-      )}
-
-
-
-      <div className="reports-toolbar">
-
-
-        <div className="reports-filter-wrapper">
-          <label>
-            Report Type
-          </label>
-
-          <select
-            value={reportType}
-            onChange={(e) => setReportType(e.target.value)}
-          >
-            <option value="daily">
-              Today
-            </option>
-
-            <option value="weekly">
-              Weekly
-            </option>
-
-            <option value="monthly">
-              Monthly
-            </option>
-
-          </select>
-
+            <p className="reports-description">
+              View attendance reports by day, week, month and course.
+            </p>
+          </div>
         </div>
 
 
+        <div className="reports-toolbar">
 
-        <div className="reports-filter-wrapper">
+          <div className="reports-filter-wrapper">
+            <label>
+              Report Type
+            </label>
 
-          <label>
-            Course
-          </label>
-
-
-          <select
-            value={courseFilter}
-            onChange={(e) => setCourseFilter(e.target.value)}
-          >
-
-            <option value="all">
-              All Courses
-            </option>
-
-
-            {courses.map(course => (
-              <option
-                key={course.course_id}
-                value={course.course_id}
-              >
-                {course.course_name}
+            <select
+              value={reportType}
+              onChange={(e) => setReportType(e.target.value)}
+            >
+              <option value="daily">
+                Today
               </option>
-            ))}
+
+              <option value="weekly">
+                Weekly
+              </option>
+
+              <option value="monthly">
+                Monthly
+              </option>
+            </select>
+          </div>
 
 
-          </select>
+          <div className="reports-filter-wrapper">
+            <label>
+              Course
+            </label>
+
+            <select
+              value={courseFilter}
+              onChange={(e) => setCourseFilter(e.target.value)}
+            >
+              <option value="all">
+                All Courses
+              </option>
+
+              {courses.map(course => (
+                <option
+                  key={course.course_id}
+                  value={course.course_id}
+                >
+                  {course.course_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+
+          <button
+            className="reports-reset-button"
+            onClick={loadReports}
+          >
+            ↻ Refresh
+          </button>
 
         </div>
-
-
-        <button
-          className="reports-reset-button"
-          onClick={loadReports}
-        >
-          ↻ Refresh
-        </button>
-
 
       </div>
 
@@ -397,104 +387,106 @@ function Reports() {
             Attendance Reports
           </h2>
 
-          <p>
-            {
-              loading
-                ?
-                "Loading..."
-                :
-                `${reports.length} report(s) found`
-            }
-          </p>
 
-        </div>
+          {
+            loading
+              ?
+              <Loader />
+              : (
+                <div className="reports-table-wrapper">
 
 
+                  <table className="reports-table">
 
-        <div className="reports-table-wrapper">
+                    <thead>
 
+                      <tr>
+                        <th>Date</th>
+                        <th>Course</th>
+                        <th>Total Students</th>
+                        <th>Present</th>
+                        <th>Late</th>
+                        <th>Absent</th>
+                        <th>Rate</th>
+                      </tr>
 
-          <table className="reports-table">
-
-            <thead>
-
-              <tr>
-                <th>Date</th>
-                <th>Course</th>
-                <th>Total Students</th>
-                <th>Present</th>
-                <th>Late</th>
-                <th>Absent</th>
-                <th>Rate</th>
-              </tr>
-
-            </thead>
+                    </thead>
 
 
-            <tbody>
+                    <tbody>
 
 
-              {reports.map((report, index) => (
+                      {reports.map((report, index) => (
 
-                <tr key={index}>
+                        <tr key={index}>
 
-                  <td>
-                    {report.date}
-                  </td>
+                          <td>
+                            {report.date}
+                          </td>
 
-                  <td>
-                    {report.course_name}
-                  </td>
+                          <td>
+                            {report.course_name}
+                          </td>
 
-                  <td>
-                    {report.total_students}
-                  </td>
+                          <td>
+                            {report.total_students}
+                          </td>
 
-                  <td>
-                    {report.present}
-                  </td>
+                          <td>
+                            {report.present}
+                          </td>
 
-                  <td>
-                    {report.late}
-                  </td>
+                          <td>
+                            {report.late}
+                          </td>
 
-                  <td>
-                    {report.absent}
-                  </td>
+                          <td>
+                            {report.absent}
+                          </td>
 
-                  <td>
-                    {report.percentage}%
-                  </td>
+                          <td>
+                            {report.percentage}%
+                          </td>
 
-                </tr>
+                        </tr>
 
-              ))}
+                      ))}
 
 
 
-              {!loading && reports.length === 0 && (
+                      {!loading && reports.length === 0 && (
 
-                <tr>
+                        <tr>
 
-                  <td
-                    colSpan="7"
-                    className="reports-empty"
-                  >
-                    No reports found.
-                  </td>
+                          <td
+                            colSpan="7"
+                            className="reports-empty"
+                          >
+                            No reports found.
+                          </td>
 
-                </tr>
+                        </tr>
 
-              )}
+                      )}
 
 
 
-            </tbody>
+                    </tbody>
 
-          </table>
+                  </table>
+
+
+                </div>
+
+              )
+          }
 
 
         </div>
+
+
+
+
 
 
       </div>
@@ -542,22 +534,28 @@ function Reports() {
             ↻ Refresh
           </button>
 
-          
+
 
         </div>
 
       </div>
 
-      {studentReport.length > 0 && (
+
+
+      {studentReportLoading ? (
+
+        <div className="reports-card">
+          <Loader />
+        </div>
+
+      ) : studentReport.length > 0 && (
 
         <div className="reports-card">
 
           <div className="reports-card-header">
-
             <h2>
               Student Attendance Report
             </h2>
-
           </div>
 
 

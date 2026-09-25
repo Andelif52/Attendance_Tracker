@@ -1,6 +1,7 @@
 import "./Courses.css";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import Loader from "../components/Loader";
 import {
     listCourses,
     createCourse,
@@ -27,6 +28,7 @@ function Courses() {
 
     const [showModal, setShowModal] = useState(false);
     const [editingCourse, setEditingCourse] = useState(null);
+    
 
 
     const [formData, setFormData] = useState({
@@ -41,8 +43,9 @@ function Courses() {
 
 
     async function loadCourses() {
+        setLoading(true);
         try {
-            setLoading(true);
+            
 
             const data = await listCourses();
 
@@ -270,9 +273,7 @@ function Courses() {
 
                 {loading ? (
 
-                    <p>
-                        Loading courses...
-                    </p>
+                    <Loader/>
 
                 ) : (
 

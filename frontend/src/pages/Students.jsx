@@ -2,6 +2,7 @@ import "./Students.css";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { listStudents, createStudent } from "../api/students";
 import { enrollFace, deleteEnrollment } from "../api/faces";
+import Loader from "../components/Loader";
 
 const emptyForm = {
   name: "",
@@ -19,6 +20,7 @@ function Students() {
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Face Enrollment Modal state
   const [enrollingStudent, setEnrollingStudent] = useState(null);
@@ -33,11 +35,17 @@ function Students() {
   const streamRef = useRef(null);
 
   const loadStudents = async () => {
+    setLoading(true);
+
     try {
       const payload = await listStudents();
       setStudents(payload.students || []);
+
     } catch (error) {
       setMessage(error.message || "Failed to load students from Firestore.");
+
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -305,7 +313,9 @@ function Students() {
 
         <div className="table-wrapper">
 
-          <table className="students-table">
+          {loading ? (
+            <Loader />
+          ) : (<table className="students-table">
 
             <thead>
               <tr>
@@ -415,7 +425,9 @@ function Students() {
 
             </tbody>
 
-          </table>
+          </table>)}
+
+
 
         </div>
 
@@ -814,8 +826,8 @@ function Students() {
 
               <p
                 className={`enroll-message ${enrollMessage.includes("Success")
-                    ? "success"
-                    : "error"
+                  ? "success"
+                  : "error"
                   }`}
               >
                 {enrollMessage}

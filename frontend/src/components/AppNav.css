@@ -2,12 +2,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 24px;
   padding: 14px 32px;
   background: #000000;
   color: #CB2957;
   border-bottom: 0.3rem solid #CB2957;
-  height: 7rem;
+  min-height: 7rem;
 }
 
 .app-nav-brand {
@@ -15,19 +15,27 @@
   letter-spacing: 0.3px;
   font-size: x-large;
   font-family: serif;
+  white-space: nowrap;
+}
+
+.app-nav-brand:hover {
+  cursor: pointer;
+  color: #e75a82;
 }
 
 .app-nav-links {
   display: flex;
-  gap: 100px;
-  width: 1000px;
+  align-items: center;
   justify-content: center;
+  gap: clamp(20px, 4vw, 60px);
+  flex: 1;
 }
 
 .app-nav-links a {
   color: #DDDDDD;
   text-decoration: none;
   font-size: large;
+  white-space: nowrap;
 }
 
 .app-nav-links a.active,
@@ -39,7 +47,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size:  medium;;
+  font-size: medium;
+  white-space: nowrap;
 }
 
 .app-nav-user button {
@@ -52,8 +61,14 @@
   transition: all 0.2s ease;
 }
 
-.app-nav-user button:hover{
+.app-nav-user button:hover {
   transform: translateY(-1px);
   background: #ac1c45;
+}
 
+.app-nav-user-name {
+  display: flex;
+  align-self: center;
+  flex-direction: column;
+  align-items: center;
 }
